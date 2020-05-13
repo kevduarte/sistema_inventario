@@ -8,9 +8,11 @@
     <!-- Bootstrap CSS -->
 
     <link rel="shortcut icon" href="{{asset('/image/ito.ico')}}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
    
-    <link  rel="stylesheet" href="{{asset('/css/estilohome.css')}}" type="text/css">
+    <link  rel="stylesheet" href="{{asset('/css/estilohome.css')}}">
 
      <title>Inicio: @yield('titulo')</title>
   </head>
@@ -21,28 +23,28 @@
   <body style="background-image: url('image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF  ;">
 
 
-    <nav class="navbar navbar-light bg-custom">
+    <nav class="navbar navbar-light" id="gob">
       <a class="navbar-brand">
         <img src="image/gobmx.png" width="85" height="20" ></a>
       </nav>
 
 <div class="container">
   <div class="row justify-content-md-center">
-    <div class="col">
+    <div class="col-md-3">
        <img  src="{{asset('image/tec.png')}}" width="250" height="140" alt=""/>
     </div>
-    <div class="col-md-auto">
-      <h1 style="color: rgb(27, 57, 106);"><strong>Instituto Tecnológico de Oaxaca</strong></h1>
-      <h2 style="color: rgb(27, 57, 106);"><strong>Departamento de Ciencias de la Tierra</strong></h2>
-      <h3 style="color: rgb(27, 57, 106);"><strong>Laboratorio de Ingeniería Civil</strong></h3>
+    <div class="col-md-6">
+      <h1 id="ito1"><strong>Instituto Tecnológico de Oaxaca</strong></h1>
+      <h2 id="dpto1"><strong>Departamento de Ciencias de la Tierra</strong></h2>
+      <h3 id="lab1"><strong>Laboratorio de Ingeniería Civil</strong></h3>
     </div>
-    <div class="col">
+    <div class="col-md-3">
        <img src="{{asset('image/logoITO.png')}}" width="150" height="140" alt=""/>
     </div>
   </div>
 </div>
 
-<nav class="navbar navbar-dark bg-custom2">
+<nav class="navbar navbar-dark" id="tecnm">
   
   <a class="navbar-brand" href="#">
      <img src="image/ito.png" width="30" height="30" class="d-inline-block align-top" alt="">

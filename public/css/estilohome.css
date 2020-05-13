@@ -14,11 +14,11 @@
 
 
 
-.bg-custom{
+#gob{
   background-color: #eaeaea;
 }
 
-.bg-custom2{
+#tecnm{
   background-color: #1B396A; 
   border-radius: 7px 7px 7px 7px;
   -moz-border-radius: 7px 7px 7px 7px;
@@ -26,16 +26,17 @@
   border: 0px double #240000
 }
 
-h1 {
+#ito1 {
   font-family:Arial Black;
   font-weight: bold;
   font-size: 1.8em;
   line-height: 1.7em;
   margin-bottom: 10px;
   text-align: center;
+  color: #1B396A;
  }
 
- h2 {
+#dpto1{
 
    font-family: Arial;
     font-weight: bold;
@@ -43,17 +44,20 @@ h1 {
     line-height: 1.7em;
     margin-bottom: 5px;
     text-align: center;
+      color: #1B396A;
 
   
   }
 
-  h3 {
+  #lab1 {
      font-family: Arial;
      font-weight: bold;
      font-size: 1.3em;
      line-height: 1.7em;
      margin-bottom: 1px;
      text-align: center;
+           color: #1B396A;
+
     }
 
  

@@ -8,7 +8,7 @@
 <div class="container mt-3" id="font2" style="background-image: url('/image/topoc (1).png'); background-size: auto; background-position:all; background-repeat: repeat; background-color: transparent ;">
 
   <br>
-  <h6 >Bienvenido</h6>
+  <h6>Bienvenido</h6>
   @if (Session::has('mess'))
   <div class="alert alert-success alert-block">
     <button type="button" class="close" data-dismiss="alert">×</button>
