@@ -447,7 +447,7 @@ public function enviar_solicitud(Request $request){
   $hora_inicio_sol=$data['hora_inicio'];
   $hora_fin_sol=$data['hora_fin'];
 
-  $encargado=DB::table('Personal')
+  $encargado=DB::table('personal')
   ->select('personal.id_personal')
   ->where([['personal.id_area','=',$area],['personal.estado','=','actual']])
   ->take(1)
