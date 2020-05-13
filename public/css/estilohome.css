@@ -16,15 +16,16 @@
 
 #gob{
   background-color: #eaeaea;
+  height: 40px; 
 }
 
-#tecnm{
-  background-color: #1B396A; 
-  border-radius: 7px 7px 7px 7px;
-  -moz-border-radius: 7px 7px 7px 7px;
-  -webkit-border-radius: 7px 7px 7px 7px;
-  border: 0px double #240000
+
+#gob img{
+  margin-top: 10px;
+
 }
+
+
 
 #ito1 {
   font-family:Arial Black;
@@ -60,20 +61,40 @@
 
     }
 
- 
 
- 
+    #tecnm{
+  background-color: #1B396A; 
+  border-radius: 7px 7px 7px 7px;
+  -moz-border-radius: 7px 7px 7px 7px;
+  -webkit-border-radius: 7px 7px 7px 7px;
+    height: 50px; 
 
- 
+}
 
-h4 {
-    font-family: 'Baloo Bhai', cursive;
+
+#tecnm img{
+  margin-top: 10px;
+
+}
+
+#tecnm h4 {
+     font-family: 'Arial';
     font-weight: bold;
      font-size: 1.5em;
      line-height: 1.7em;
-     margin-bottom: 1px;
-     text-align: center;
-    }
+     margin-bottom: 10px;
+     color: white;
+
+
+}
+
+ 
+
+ 
+
+ 
+
+
 
     h5 {
  font-family: 'Baloo Bhai', cursive;
