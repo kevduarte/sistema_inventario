@@ -36,22 +36,22 @@
 <body class="hold-transition sidebar-mini layout-fixed">
   <!-- Site wrapper -->
   <div class="wrapper">
+   
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background-color: #AFAFAF;border-radius: 0px 0px 0px 0px; -moz-border-radius: 0px 0px 0px 0px; -moz-box-shadow: 10px 10px 5px -4px rgba(61,61,61,1); -webkit-border-radius: 0px 0px 0px 0px; -webkit-box-shadow: 10px 10px 5px -4px rgba(61,61,61,1); border: 0px solid #000000;">
       <!-- Left navbar links -->
 
       <ul class="navbar-nav">
-
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
         </li>
       </ul>
 
-       <span class="navbar-text" style="font-family:'Segoe IU';">Laboratorio de ingenieria civil.</span>
+       <span class="navbar-text" style="font-family:' Tahoma ';">DPTO. DE CIENCIAS DE LA TIERRA.</span>
 
       <ul class="navbar-nav ml-auto">
 
-        <!-- Notifications Dropdown Menu -->
+     <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="far fa-bell"></i>
@@ -86,11 +86,12 @@
 
             $vale=$suma;  
 
+
             $users2 = DB::table('detalle_grupos')
             ->select('detalle_grupos.estado')
             ->join('grupos','grupos.id_grupo','=','detalle_grupos.nom_grupo')
             ->join('docentes','docentes.id_docente','=','grupos.id_docente')
-            ->where('detalle_grupos.estado','=','cursando')
+            ->where([['detalle_grupos.estado','=','cursando'],['grupos.id_docente','=',$id_p]])
             ->count();
 
             $uno=1;
@@ -154,31 +155,29 @@
         </div>
       </li>
 
+
+              <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Cuenta </span></a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{{ route('cuenta_admin')}}" >
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
+                    Configuración de cuenta
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
+                    Cerrar Sesión
+                  </a>
+                </div>
+              </li>
+
         
 
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Cuenta</a>
-      </li>
-
-      <li class="nav-item">
-
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        </a>
-        <!-- Dropdown - User Information -->
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href="#" >
-            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
-            Configuración de cuenta
-          </a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
-            Cerrar Sesión
-          </a>
-        </div>
-      </li>
-
     </ul>
+
+      
+     
 
 
   </nav>
@@ -205,8 +204,8 @@
           <img src="{{asset('image/topo.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
               <div class="info">
-         <a href="{{route ('docente')}}" class="d-block">
-          <span style="font-family:Lucida Sans Unicode;">
+         <a href="{{route ('docente')}}" class="d-block" id="didacinfo">
+          <span>
           <?php $usuario_actual=Auth::user()->id_user;
           $id=$usuario_actual;
 
@@ -230,7 +229,8 @@
         
           ?>
       </span>
-      <br>
+
+       <br>
       <div align="center">
       <span style="font-size:small; font-family:Lucida Sans Unicode;">
          <i class="fa fa-circle text-success fa-xs"></i> <?php
@@ -267,13 +267,13 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href= {{ route('registrar_grupo')}} class="nav-link">
+                <a href="{{ route('registrar_grupo')}}" class="nav-link">
                   <i class="fa fa-plus-circle nav-icon"></i>
                   <p>Registrar</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href={{ route('mis_grupos')}} class="nav-link">
+                <a href="{{ route('mis_grupos')}}" class="nav-link">
                   <i class="fa fa-bars nav-icon"></i>
                   <p>Mis grupos</p>
                 </a>
@@ -287,7 +287,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                <a href= {{ route('brigadas_grupos')}} class="nav-link">
+                <a href= "{{ route('brigadas_grupos')}}" class="nav-link">
                   <i class="fa fa-briefcase nav-icon"></i>
                   <p>Administrar</p>
                 </a>
@@ -310,19 +310,26 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href={{ route('solicitar_material')}} class="nav-link">
+                <a href="{{ route('solicitar_material')}}" class="nav-link">
                   <i class="fa fa-file nav-icon"></i>
                   <p>Solicitar material</p>
                 </a>
               </li>
+               <li class="nav-item">
+                <a href="{{ route('sol_pendientes')}}" class="nav-link">
+                  <i class="fa fa-ban nav-icon"></i>
+                  <p>Solicitudes pendientes</p>
+                </a>
+              </li>
                 <li class="nav-item">
-                <a href={{ route('mis_solicitudes')}} class="nav-link">
+                <a href="{{ route('mis_solicitudes')}}" class="nav-link">
                   <i class="fa fa-check nav-icon"></i>
                   <p>Solicitudes aprobadas</p>
                 </a>
               </li>
+             
               <li class="nav-item">
-                <a href={{ route('mis_solicitudes_fin')}} class="nav-link">
+                <a href="{{ route('mis_solicitudes_fin')}}" class="nav-link">
                   <i class="fa fa-hourglass-end nav-icon"></i>
                   <p>Préstamos finalizados</p>
                 </a>
@@ -360,7 +367,9 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" style="background-image: url('/image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF  ;">
+  <div class="content-wrapper" style="background-image: url('/image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF; background-attachment: fixed;">
+
+
 
 
     <!-- Main content -->
@@ -368,6 +377,28 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+
+     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header modal-header-danger">
+          <h5 class="modal-title" id="exampleModalLabel">¿Desea cerrar Sesión?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Presione "Finalizar Sesión" para confirmar.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+          <a class="btn btn-primary" href="{{ route('logout_system') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Finalizar Sesión</a>
+
+         <form id="logout-form" action="{{ route('logout_system') }}" method="POST" style="display: none;">
+            @csrf
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- Footer -->
@@ -391,27 +422,7 @@
   </aside>
   <!-- /.control-sidebar -->
 
-   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header modal-header-danger">
-          <h5 class="modal-title" id="exampleModalLabel">¿Desea cerrar Sesión?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">Presione "Finalizar Sesión" para confirmar.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-          <a class="btn btn-primary" href="{{ route('logout_system') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Finalizar Sesión</a>
 
-         <form id="logout-form" action="{{ route('logout_system') }}" method="POST" style="display: none;">
-            @csrf
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
   
 
 </div>

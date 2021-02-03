@@ -38,7 +38,8 @@
     </div>
     @endif
 
-    
+    <div class="table-responsive">
+ 
   <table class="table table-bordered" id="font2">
   <h2 style= "font-family: 'Initial';">Grupos registrados durante el periodo: {{$detalle}}</h2>
    
@@ -84,6 +85,7 @@
 
   
 </table>
+</div>
 @if (count($dato))
   {{ $dato->links() }}
 @endif
@@ -104,7 +106,7 @@
 <script type="text/javascript">
      function confirmation() 
      {
-        if(confirm("Desea formar brigadas para este grupo?"))
+        if(confirm("Las brigadas serán utilizadas para los préstamos del laboratorio,¿Continuar?"))
   {
      return true;
   }

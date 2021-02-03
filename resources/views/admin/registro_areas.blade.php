@@ -74,6 +74,8 @@
 </br>
 
 <div class="container">
+        <div class="table-responsive">
+
       <table class="table table-bordered" id="font5">
      <h2 style= "font-family: 'initial';">Áreas registradas dentro del laboratorio</h2>
     <thead class="thead-dark">
@@ -102,8 +104,10 @@
    
   </tbody>
 </table>
-</br>
+{{ $areas->links() }}
 
+<br>
+</div>
    </div>
 
 

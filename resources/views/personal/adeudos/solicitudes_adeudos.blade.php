@@ -39,7 +39,8 @@
   @endif
 
   <div class="container" id="font1">
- 
+         <div class="table-responsive">
+
 </br>
   <table class="table table-bordered" id="font5">
    <h2>Solicitudes que presentan adeudos del área de {{$nombrearea}}</h2>
@@ -98,11 +99,11 @@
 
 
 @if($solicitudes->count()==0)
-<h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:#FFE739;">Aún no ha realizado solicitudes</h2>  
+<h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:#FFE739;">No hay adeudos</h2>  
 
  @endif 
 
- 
+ </div>
 
 
 </div>

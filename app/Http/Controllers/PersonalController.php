@@ -434,8 +434,8 @@ $materiales=DB::table('materiales')
 
 
 
-     public function solicitudes_area()
-    {
+     public function solicitudes_area(){
+      
         $usuario_actual=\Auth::user();
       if($usuario_actual->tipo_usuario!='area'){
        return redirect()->back();
@@ -488,7 +488,8 @@ $materiales=DB::table('materiales')
 
       
   $aprobadas=DB::table('solicitudes')
-  ->select('solicitudes.id_solicitud','solicitudes.fecha_solicitud','solicitudes.fecha_prestamo','solicitudes.estado','grupos.grupo','grupos.hora_inicio','grupos.hora_fin','personas.nombre','personas.apellido_paterno','personas.apellido_materno')
+  ->select('solicitudes.id_solicitud','solicitudes.fecha_solicitud','solicitudes.fecha_prestamo','solicitudes.estado','grupos.grupo','grupos.hora_inicio','grupos.hora_fin','personas.nombre','personas.apellido_paterno','personas.apellido_materno','prestamos.tipo_prestamo')
+  ->join('prestamos','solicitudes.id_prestamo','=','prestamos.id_prestamo')
   ->join('grupos','solicitudes.id_grupo','=','grupos.id_grupo')
   ->join('areas','solicitudes.id_area','=','areas.id_area')
   ->join('docentes','solicitudes.id_docente','=','docentes.id_docente')
@@ -500,14 +501,106 @@ $materiales=DB::table('materiales')
     return view('personal.prestamos.solicitudes')->with('solicitudes',$aprobadas)->with('semestre',$semestre1)->with('nombrearea',$name);
     }
 
-    public function detalles_solicitud($id_solicitud)
-{
+
+
+
+public function detalles_solicitud($id_solicitud){
    $usuario_actual=\Auth::user();
      if($usuario_actual->tipo_usuario!='area'){
        return redirect()->back();
       }
 
       $solicitud=$id_solicitud;
+
+     $tipo=DB::table('solicitudes')
+     ->select('solicitudes.id_prestamo')
+     ->where('solicitudes.id_solicitud',$solicitud)
+     ->take(1)
+     ->first();
+
+     $tipo=$tipo->id_prestamo;
+
+
+     if($tipo==2){
+
+       $id=$usuario_actual->id_user;
+
+      $id_personal = DB::table('personal')
+      ->select('personal.id_personal')
+      ->join('personas', 'personas.id_persona', '=' ,'personal.id_persona')
+      ->join('users', 'users.id_persona', '=' ,'personas.id_persona')
+      ->where('users.id_user', $id)
+      ->take(1)
+      ->first();
+      $id_p=$id_personal->id_personal;
+
+
+
+  $area= DB::table('areas')
+  ->select('areas.id_area','areas.area')
+  ->join('personal','personal.id_area','=','areas.id_area')
+  ->where('personal.id_personal',$id_p)
+ ->take(1)
+  ->first();
+
+  $a=$area->id_area;
+    
+
+     $grupo=DB::table('solicitudes')
+     ->select('grupos.grupo')
+     ->join('grupos','solicitudes.id_grupo','grupos.id_grupo')
+     ->where('solicitudes.id_solicitud',$solicitud)
+     ->take(1)
+     ->first();
+
+     $grupo=$grupo->grupo;
+
+     $detalles2=DB::table('vales')
+      ->select('vales.id_vale','vales.fecha_prestamo_vale','vales.hora_inicio_vale','vales.hora_fin_vale')
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud')
+     ->where('vales.id_solicitud','=',$solicitud)
+   ->take(1)
+     ->first();
+
+     $detalles2=$detalles2->fecha_prestamo_vale;
+
+      $detalles3=DB::table('vales')
+      ->select('vales.id_vale','vales.fecha_prestamo_vale','vales.hora_inicio_vale','vales.hora_fin_vale')
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud')
+     ->where('vales.id_solicitud','=',$solicitud)
+   ->take(1)
+     ->first();
+
+     $detalles3=$detalles3->hora_inicio_vale;
+
+      $detalles4=DB::table('vales')
+      ->select('vales.id_vale','vales.fecha_prestamo_vale','vales.hora_inicio_vale','vales.hora_fin_vale')
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud')
+     ->where('vales.id_solicitud','=',$solicitud)
+   ->take(1)
+     ->first();
+
+     $detalles4=$detalles4->hora_fin_vale;
+
+
+         $detalles=DB::table('vales')
+      ->select('vales.id_vale','vales.fecha_prestamo_vale','vales.hora_inicio_vale','vales.hora_fin_vale','vales.estado_vale','areas.area')
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud')
+      ->join('areas','vales.id_area','=','areas.id_area')
+     ->where([['vales.id_solicitud','=',$solicitud],['vales.id_area','=',$a]])
+     ->paginate(10);
+
+  return view('personal/prestamos.detalle_solicitud_grupal')
+  ->with('detalle',$detalles)
+  ->with('grupo',$grupo)
+  ->with('fecha_practica',$detalles2)
+  ->with('inicio',$detalles3)
+   ->with('final',$detalles4);
+
+
+
+     }
+
 
       $id=$usuario_actual->id_user;
 
@@ -580,10 +673,12 @@ $materiales=DB::table('materiales')
      ->where([['vales.id_solicitud','=',$solicitud],['vales.id_area','=',$a]])
      ->paginate(10);
 
-	return view('personal/prestamos.detalle_solicitud')->with('detalle',$detalles)->with('grupo',$grupo)
+	return view('personal/prestamos.detalle_solicitud')
+  ->with('detalle',$detalles)
+  ->with('grupo',$grupo)
   ->with('fecha_practica',$detalles2)
-    ->with('inicio',$detalles3)
-      ->with('final',$detalles4);
+  ->with('inicio',$detalles3)
+   ->with('final',$detalles4);
 }
 
 
@@ -627,6 +722,7 @@ $materiales=DB::table('materiales')
       ->join('estudiantes','detalle_brigadas.num_control','=','estudiantes.num_control')
       ->join('personas','estudiantes.id_persona','=','personas.id_persona')
      ->where([['vales.id_vale','=',$vale],['vales.id_area','=',$a]])
+     ->orderBy('personas.apellido_paterno','asc')
      ->paginate(10);
 
 
@@ -648,11 +744,90 @@ $materiales=DB::table('materiales')
      ->where([['vales.id_vale','=',$vale],['vales.id_area','=',$a]])
      ->paginate(10);
 
+     $soli=DB::table('solicitudes')
+     ->select('solicitudes.id_solicitud')
+     ->join('vales','solicitudes.id_solicitud','=','vales.id_solicitud')
+     ->where('vales.id_vale',$vale)
+     ->take(1)
+     ->first();
+
+     $soli=$soli->id_solicitud;
+
+$estado=DB::table('vales')
+->select('vales.estado_vale')
+->where('vales.id_vale','=',$vale)
+->take(1)
+->first();
+
+$estado=$estado->estado_vale;
+
+
+  return view('personal/prestamos.detalle_vale')->with('detalle',$detalle)->with('detallemate',$detmate)->with('nombreb',$name)->with('vales',$vale)->with('solicitud',$soli)->with('estado',$estado);
 
 
 
+  }
 
-  return view('personal/prestamos.detalle_vale')->with('detalle',$detalle)->with('detallemate',$detmate)->with('nombreb',$name);
+
+
+   public function detalles_vale_grupal($id_vale)
+{
+
+   $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='area'){
+       return redirect()->back();
+      }
+
+
+      $vale=$id_vale;
+      $id=$usuario_actual->id_user;
+
+      $id_personal = DB::table('personal')
+      ->select('personal.id_personal')
+      ->join('personas', 'personas.id_persona', '=' ,'personal.id_persona')
+      ->join('users', 'users.id_persona', '=' ,'personas.id_persona')
+      ->where('users.id_user', $id)
+      ->take(1)
+      ->first();
+      $id_p=$id_personal->id_personal;
+
+      $area= DB::table('areas')
+      ->select('areas.id_area','areas.area')
+      ->join('personal','personal.id_area','=','areas.id_area')
+      ->where('personal.id_personal',$id_p)
+      ->take(1)
+      ->first();
+
+      $a=$area->id_area;
+
+
+       $detmate=DB::table('vales')
+      ->select('vales.id_vale','materiales.nombre_material','unidades.num_serie')
+      ->join('vale_material','vales.id_vale','=','vale_material.id_vale')
+      ->join('materiales','vale_material.id_material','=','materiales.id_material') 
+      ->join('unidades','vale_material.id_unidad','=','unidades.id_unidad')      
+     ->where([['vales.id_vale','=',$vale],['vales.id_area','=',$a]])
+     ->paginate(10);
+
+     $soli=DB::table('solicitudes')
+     ->select('solicitudes.id_solicitud')
+     ->join('vales','solicitudes.id_solicitud','=','vales.id_solicitud')
+     ->where('vales.id_vale',$vale)
+     ->take(1)
+     ->first();
+
+     $soli=$soli->id_solicitud;
+
+$estado=DB::table('vales')
+->select('vales.estado_vale')
+->where('vales.id_vale','=',$vale)
+->take(1)
+->first();
+
+$estado=$estado->estado_vale;
+
+
+  return view('personal/prestamos.detalle_vale_grupal')->with('detallemate',$detmate)->with('vales',$vale)->with('solicitud',$soli)->with('estado',$estado);
 
 
 
@@ -662,7 +837,8 @@ $materiales=DB::table('materiales')
 
 
 
- public function entregar_vale($id_vale)
+
+ public function entregar_vale($id_vale,$id_solicitud)
 {
 
    $usuario_actual=\Auth::user();
@@ -671,6 +847,27 @@ $materiales=DB::table('materiales')
       }
 
       $vale=$id_vale;
+      $solicitud=$id_solicitud;
+
+
+      $cambio=DB::table('unidades')
+      ->select('unidades.id_unidad')
+      ->join('vale_material','unidades.id_unidad','=','vale_material.id_unidad')
+      ->where('vale_material.id_vale',$vale)
+      ->get();
+
+       foreach ($cambio as $n =>$valor3) 
+        {
+          
+          $id=$valor3->id_unidad;
+
+
+             DB::table('unidades')
+    ->where('unidades.id_unidad',  $id)
+    ->update(
+      ['estado' => 'prestado']);
+           
+        }
 
  DB::table('vales')
                 ->where('id_vale', $vale)
@@ -678,16 +875,13 @@ $materiales=DB::table('materiales')
 
 
      Session::flash('message','Material entregado a la brigada ');
-    return redirect()->back();
-
-
+     return redirect()->route('detalles_solicitud',['id_solicitud' => $solicitud]);
 }
 
 
 
 
-
- public function liberar_vale($id_vale)
+ public function entregar_vale_grupal($id_vale,$id_solicitud)
 {
 
    $usuario_actual=\Auth::user();
@@ -696,10 +890,100 @@ $materiales=DB::table('materiales')
       }
 
       $vale=$id_vale;
+      $solicitud=$id_solicitud;
+
+
+      $cambio=DB::table('unidades')
+      ->select('unidades.id_unidad')
+      ->join('vale_material','unidades.id_unidad','=','vale_material.id_unidad')
+      ->where('vale_material.id_vale',$vale)
+      ->get();
+
+       foreach ($cambio as $n =>$valor3) 
+        {
+          
+          $id=$valor3->id_unidad;
+
+
+             DB::table('unidades')
+    ->where('unidades.id_unidad',  $id)
+    ->update(
+      ['estado' => 'prestado']);
+           
+        }
 
  DB::table('vales')
                 ->where('id_vale', $vale)
+                ->update(['estado_vale' => 'en curso']);
+
+
+     Session::flash('message','Material entregado a la brigada ');
+     return redirect()->route('detalles_solicitud',['id_solicitud' => $solicitud]);
+}
+
+
+
+
+
+ public function liberar_vale($id_vale,$id_solicitud)
+{
+
+   $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='area'){
+       return redirect()->back();
+      }
+
+      $vale=$id_vale;
+      $solicitud=$id_solicitud;
+
+                 DB::table('vales')
+                ->where('id_vale', $vale)
                 ->update(['estado_vale' => 'finalizado']);
+
+
+                 $cambio=DB::table('unidades')
+      ->select('unidades.id_unidad')
+      ->join('vale_material','unidades.id_unidad','=','vale_material.id_unidad')
+      ->where('vale_material.id_vale',$vale)
+      ->get();
+
+
+
+       foreach ($cambio as $n =>$valor3) 
+        {
+          
+          $id=$valor3->id_unidad;
+
+
+             DB::table('unidades')
+    ->where('unidades.id_unidad',  $id)
+    ->update(
+      ['estado' => 'disponible']);
+           
+        }
+
+        $matemas=DB::table('materiales')
+      ->select('materiales.id_material','materiales.n_unidades')
+      ->join('vale_material','materiales.id_material','=','vale_material.id_material')
+      ->where('vale_material.id_vale',$vale)
+      ->get();
+
+
+       foreach ($matemas as $m =>$valor4) 
+        {
+          
+          $id_m=$valor4->id_material;
+          $id_n=$valor4->n_unidades;
+
+
+             DB::table('materiales')
+    ->where('materiales.id_material',  $id_m)
+    ->update(
+      ['n_unidades' => $id_n+1]);
+           
+        }
+
+
 
 
                 $fin=DB::table('vales')
@@ -769,7 +1053,7 @@ $materiales=DB::table('materiales')
 
 
      Session::flash('message','Vale liberado ');
-    return redirect()->back();
+     return redirect()->route('detalles_solicitud',['id_solicitud' => $solicitud]);
 
 
 }

@@ -39,19 +39,60 @@
 <div class="container">
 
 
+   <div class="table-responsive">
 
-ESTUDIANTE HOLA
+ 
+  <table class="table table-bordered" id="font2">
+   <h2 style= "font-family: 'Initial';">Grupos cursando durante el semestre :{{$sem}}</h2>
+   <thead>
+    <tr>
+      <th scope="col">GRUPO</th>
+      <th scope="col">DOCENTE</th>
+            <th scope="col">MATERIA</th>
+
+
+      <th scope="col">HORARIO</th>
+      
+      <th scope="col">ESTADO</th>
+
+     
+    </tr>
+  </thead>
+  <tbody>
+    @foreach($dato as $datos)
+
+    <tr>
+
+      <th>{{$datos->grupo}}</th>
+      <td>{{$datos->nombre}} {{$datos->apellido_paterno}} {{$datos->apellido_materno}}</td>
+            <td>{{$datos->materia}}</td>
 
 
 
-</br>
+      <td><?php if(empty($datos->hora_fin)){ echo $datos->hora_inicio;} else{echo date("H:i a", strtotime($datos->hora_inicio)); echo " a "; echo date("H:i a", strtotime($datos->hora_fin));} ?>
+    </td>
+
+    <td>{{$datos->estado}}</td>
+   
 
 
-
-
-
+  </tr>
+  @endforeach
+</tbody>
+</table>
 </div>
 
+@if (count($dato))
+{{ $dato->links() }}
+@endif
+
+@if($dato->count()==0)
+<h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:orange;">NO ESTAS INSCRITO ACTUALMENTE A UN GRUPO</h2>  
+
+ @endif   
+  
+ 
+</div>
 
 
 

@@ -14,23 +14,28 @@
 
     <!-- Bootstrap CSS -->
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+
+      <link rel="stylesheet" href="{{asset('/css/bootstrap.min.css')}}">
+
    
     <link  rel="stylesheet" type="text/css" href="{{asset('/css/estilohome.css')}}">
 
   </head>
 
-  <body style="background-image: url('image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF  ;">
+  <body style="background-image: url('image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF; background-attachment: fixed;">
+
+
 
 
     <div class="container-fluid" id="gob">
-        <img src="image/gobmx.png" width="85" height="20" >
+        <img src="image/gobmx.png" width="85" height="20" alt="gobmx">
     </div>
 
 <div class="container">
   <div class="row">
     <div class="col-md-3" align="center">
-       <img  src="{{asset('image/tec.png')}}" width="250" height="140" alt=""/>
+       <img  src="{{asset('image/tec.png')}}" width="250" height="140" alt="logotecnm"/>
     </div>
     <div class="col-md-6" align="center">
       <h1 id="ito1"><strong>Instituto Tecnológico de Oaxaca</strong></h1>
@@ -38,7 +43,7 @@
       <h3 id="lab1"><strong>Laboratorio de Ingeniería Civil</strong></h3>
     </div>
     <div class="col-md-3" align="center">
-       <img src="{{asset('image/logoITO.png')}}" width="150" height="140" alt=""/>
+       <img src="{{asset('image/logoITO.png')}}" width="150" height="140" alt="logoito"/>
     </div>
   </div>
 </div>
@@ -68,7 +73,7 @@
     <div class="contain mt-5" align="center" >
       <section class="content-header">
 
-       <img src="image/SEP-LOGO.png" width="250" height="90" alt=""/>
+       <img src="image/SEP-LOGO.png" width="250" height="90" alt="sep"/>
 
 
      </section>
@@ -85,10 +90,19 @@
     <!-- Copyright -->
   </footer>
 
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
+
+
+<!-- jQuery -->
+<script src="{{asset('/requisitos/lte/plugins/jquery/jquery.min.js')}}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{{asset('/requisitos/lte/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
+
+<!-- Bootstrap 4 -->
+<script src="{{asset('/requisitos/lte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+<!-- overlayScrollbars -->
+<script src="{{asset('/requisitos/lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 
   </body>
 </html>

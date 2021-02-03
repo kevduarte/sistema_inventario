@@ -338,11 +338,11 @@ Route::get('detalles_solicitud/{id_solicitud}','PersonalController@detalles_soli
 
 Route::get('detalles_vale/{id_vale}','PersonalController@detalles_vale')->name('detalles_vale');
 
-Route::get('entregar_vale/{id_vale}','PersonalController@entregar_vale')->name('entregar_vale');
+Route::get('entregar_vale/{id_vale}/{id_solicitud}','PersonalController@entregar_vale')->name('entregar_vale');
 
-Route::get('liberar_vale/{id_vale}','PersonalController@liberar_vale')->name('liberar_vale');
+Route::get('liberar_vale/{id_vale}/{id_solicitud}','PersonalController@liberar_vale')->name('liberar_vale');
 
-Route::get('retener_vale/{id_vale}','PersonalController@retener_vale')->name('retener_vale');
+Route::get('retener_vale/{id_vale}/{id_solicitud}','PersonalController@retener_vale')->name('retener_vale');
 
 
 Route::get('adeudos_material','PersonalController@adeudos_material')->name('adeudos_material');
@@ -354,6 +354,11 @@ Route::get('detalles_vale_adeudo/{id_vale}','PersonalController@detalles_vale_ad
 
 Route::get('solicitudes_area_fin', 'PersonalController@solicitudes_area_fin')->name('solicitudes_area_fin');
 
+
+///sol grupal
+
+Route::get('detalles_vale_grupal/{id_vale}','PersonalController@detalles_vale_grupal')->name('detalles_vale_grupal');
+Route::get('entregar_vale_grupal/{id_vale}/{id_solicitud}','PersonalController@entregar_vale_grupal')->name('entregar_vale_grupal');
 
 
 
@@ -379,7 +384,20 @@ Route::get('solicitar_material', 'DocenteController@solicitar_material')->name('
 Route::get('solicitud_grupo/{id_grupo}','DocenteController@solicitud_grupo')->name('solicitud_grupo');
 Route::any('solicitud_enviar', 'DocenteController@enviar_solicitud')->name('solicitud_enviar');
 
+Route::get('sol_pendientes','DocenteController@sol_pendientes')->name('sol_pendientes');
 
+//seleccionar material grupal
+Route::get('seleccionar_material_grupal/{id_solicitud}','DocenteController@seleccionar_material_grupal')
+->name('seleccionar_material_grupal');
+Route::post('agregar_material_grupal', 'DocenteController@agregar_material_grupal')->name('agregar_material_grupal');
+Route::get('quitar_carro_grupal/{id_material}','DocenteController@quitar_carro_grupal')->name('quitar_carro_grupal');
+Route::post('solicitud_enviada_grupal', 'DocenteController@solicitud_enviada_grupal')->name('solicitud_enviada_grupal');
+
+
+
+
+
+//seleccionar material por brigada
 Route::get('seleccionar_material/{id_solicitud}','DocenteController@seleccionar_material')->name('seleccionar_material');
 Route::post('agregar_material', 'DocenteController@agregar_material')->name('agregar_material');
 
@@ -440,6 +458,16 @@ Route::get('grupos_disponibles', 'EstudianteController@grupos_disponibles')->nam
 Route::get('inscripcion_grupo/{id_grupo}', 'EstudianteController@inscripcion')->name('inscripcion_grupo');
 Route::post('nueva_inscripcion', 'EstudianteController@nueva_inscripcion')->name('nueva_inscripcion');
 Route::get('mis_cursos', 'EstudianteController@cursos')->name('mis_cursos');
+Route::get('mis_brigadas', 'EstudianteController@mis_brigadas')->name('mis_brigadas');
+Route::get('ver_miembros_jefebrig/{id_brigada}', 'EstudianteController@ver_miembros')->name('ver_miembros_jefebrig');
+
+
+
+Route::get('practicas_estudiante', 'EstudianteController@practicas_estudiante')->name('practicas_estudiante');
+Route::get('practicas_estudiante_curso', 'EstudianteController@practicas_estudiante_curso')->name('practicas_estudiante_curso');
+
+
+
 });
 
 

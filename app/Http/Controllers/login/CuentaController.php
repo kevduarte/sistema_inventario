@@ -61,6 +61,8 @@ public function registro_cuenta_estudiante(Request $request)
 		'nombre' => ['required', 'string', 'max:80'],
 		'apellido_paterno' => ['required', 'string', 'max:80'],
 		'num_control' => ['required', 'unique:estudiantes'],
+        'email' => ['required', 'unique:personas'],
+
    
 	]);
 
@@ -74,15 +76,7 @@ public function registro_cuenta_estudiante(Request $request)
   $periodo_semestre= $periodo_semestre->id_semestre;
 
   $email=$data['email'];
-  $sem2=$data['semestre2'];
   $sem=$data['semestre'];
-
-  if($sem2!=$sem){
-
-      Session::flash('mess','El semestre no coincide con el número de control');
-       return redirect()->back();
-
-  }
 
   if(empty($email)){
 

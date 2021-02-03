@@ -1,6 +1,6 @@
 @extends('layouts.plantilla_docente')
 @section('title')
-:mis solicitudes
+:prestamos finalizados
 @endsection
 
 
@@ -10,12 +10,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1  style="font-size: 2.0em; font-family: 'Constantia'; font-weight: 900;">Mis solicitudes</h1>
+            <h1  style="font-size: 2.0em; font-family: 'Constantia'; font-weight: 900;">Prestamos finalizados</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Prestamos</a></li>
-              <li class="breadcrumb-item active">mis solicictudes</li>
+              <li class="breadcrumb-item active">finalizados</li>
             </ol>
           </div>
         </div>
@@ -40,6 +40,7 @@
 
   <div class="container" id="font1">
  
+    <div class="table-responsive">
 
   <table class="table table-bordered" id="font5">
    <h2>Relación de solicitudes realizadas durante el semestre {{$semestre}}</h2>
@@ -77,6 +78,7 @@
   </tbody>
 </table>
 {{ $solicitudes->links() }}
+</div>
 
 </br>
 

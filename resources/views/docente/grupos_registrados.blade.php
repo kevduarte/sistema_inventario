@@ -14,7 +14,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href={{ route('docente')}}>Docente</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('docente')}}">Docente</a></li>
               <li class="breadcrumb-item active">grupos</li>
                             <li class="breadcrumb-item active">mis grupos</li>
 
@@ -32,7 +32,7 @@
       <strong>{{ Session::get('message') }}</strong>
     </div>
     @endif
-                             <div class="table-responsive">
+  <div class="table-responsive">
 
   <table class="table table-bordered" id="font2">
   <h2 style= "font-family:Initial;">Grupos registrados durante el semestre: {{$detalle}}</h2>
@@ -87,10 +87,12 @@
 
   
 </table>
+
+
+
 @if (count($dato))
   {{ $dato->links() }}
 @endif
-</div>
 
 @if($dato->count()==0)
 <h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:orange;">NO TIENE GRUPOS REGISTRADOS</h2>  
@@ -98,7 +100,7 @@
  @endif   
 
 
-
+</div>
 
 </div>
 

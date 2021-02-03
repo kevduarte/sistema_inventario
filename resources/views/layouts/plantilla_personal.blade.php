@@ -42,44 +42,133 @@
       <!-- Left navbar links -->
 
       <ul class="navbar-nav">
-
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
         </li>
       </ul>
 
-       <span class="navbar-text" style="font-family:'Segoe IU';">Laboratorio de ingenieria civil.</span>
+       <span class="navbar-text" style="font-family:' Tahoma ';">DPTO. DE CIENCIAS DE LA TIERRA.</span>
 
       <ul class="navbar-nav ml-auto">
 
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">CUENTA</a>
-      </li>
+     
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">
+           <?php $usuario_actual=Auth::user()->id_user;
+            $id=$usuario_actual;
 
-      <li class="nav-item">
+            $id_personal = DB::table('personal')
+            ->select('personas.id_persona','personal.id_personal')
+            ->join('personas', 'personas.id_persona', '=' ,'personal.id_persona')
+            ->join('users', 'users.id_persona', '=' ,'personas.id_persona')
+            ->where('users.id_user', $id)
+            ->take(1)
+            ->first();
 
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="mr-2 d-none d-lg-inline text-gray-600 small"></span>
+            $id_personal=$id_personal->id_personal;
+
+            $area=DB::table('areas')
+            ->select('areas.id_area')
+            ->join('personal','areas.id_area','=','personal.id_area')
+            ->where('personal.id_personal',$id_personal)
+            ->take(1)
+            ->first();
+
+            $area=$area->id_area;
 
 
-          <img class="img-profile rounded-circle"  src="" >
 
+            $solis=DB::table('solicitudes')
+            ->select('solicitudes.id_solicitud')
+            ->join('areas','solicitudes.id_area','=','areas.id_area')
+            ->where([['solicitudes.id_area','=',$area],['solicitudes.estado','=','aprobada']])
+            ->count();
+
+            $cero=0;
+
+            if (empty($solis)) {
+              echo $cero;
+            }
+            else{
+              echo $solis;
+            }
+
+
+
+          ?>
+        </span>
         </a>
-        <!-- Dropdown - User Information -->
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href= >
-            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
-            Configuración de cuenta
-          </a>
+
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">mensajes</span>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
-            Cerrar Sesión
+          <a href="{{ route('solicitudes_area')}}" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i>
+
+             <?php
+
+              if($solis<2){
+
+             echo 'Hay'.' '.$solis.' '.'nueva solicitud';
+
+
+           }
+           if (empty($solis)) {
+             'No hay solicitudes por el momento';
+           }
+           if ($solis>=2) {
+               echo 'Hay'.' '.$solis.' '.'nuevas solicitudes';
+           }
+
+
+          ?>
+            
           </a>
+
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i> 8 friend requests
+            <span class="float-right text-muted text-sm">12 hours</span>
+          </a>
+
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> 3 new reports
+            <span class="float-right text-muted text-sm">2 days</span>
+          </a>
+
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">laboratorio</a>
         </div>
       </li>
 
+
+
+              <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Cuenta </span></a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{{ route('cuenta_admin')}}" >
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
+                    Configuración de cuenta
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
+                    Cerrar Sesión
+                  </a>
+                </div>
+              </li>
+
+        
+
     </ul>
+
+      
+     
 
 
   </nav>
@@ -107,7 +196,7 @@
         </div>
         <div class="info">
           
-           <a href="{{route ('personal')}}" class="d-block">
+           <a href="{{route ('personal')}}" class="d-block" id="didacinfo">
           <span style="font-family:Lucida Sans Unicode;">
           <?php $usuario_actual=Auth::user()->id_user;
           $id=$usuario_actual;
@@ -243,12 +332,7 @@
                   <p>Préstamos finalizados</p>
                 </a>
               </li>
-               <li class="nav-item">
-                <a href= "" class="nav-link">
-                  <i class="fa fa-plus-circle nav-icon"></i>
-                  <p>#</p>
-                </a>
-              </li>
+              
                <hr class="sidebar-divider" style=" background-color: #FFFFFF;"><!-- Heading -->
 
             </ul>

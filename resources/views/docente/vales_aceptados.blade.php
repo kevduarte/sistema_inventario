@@ -30,6 +30,7 @@
       <strong>{{ Session::get('message') }}</strong>
     </div>
     @endif
+    <div class="table-responsive">
 
   <table class="table table-bordered" id="font2">
     <h2  style= "font-family: 'initial';">Lista de solicitudes</h2>
@@ -68,7 +69,7 @@
   
 </table>
 
-
+</div>
 
 </div>
 

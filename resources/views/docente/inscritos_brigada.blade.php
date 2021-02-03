@@ -15,7 +15,7 @@
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="{{ route ('docente')}}">Docente</a></li>
               <li class="breadcrumb-item active"><a href="{{ route ('brigadas_grupos')}}">grupos</a></li>
-              <li class="breadcrumb-item active"><a href="{{ URL::previous() }}">brigadas</a></li>
+              <li class="breadcrumb-item active"><a href="/brigadas_formadas/{{ $idgrup}}/{{$data}}">brigadas</a></li>
               <li class="breadcrumb-item active">inscritos</li>
             </ol>
           </div>
@@ -38,6 +38,9 @@
     </div>
     @endif
     
+
+        <div class="table-responsive">
+
   <table class="table table-bordered" id="font2">
   <h2 style= "font-family: 'Segoe UI';">Lista de estudiantes</h2>
    
@@ -58,7 +61,7 @@
        <tr>
               <td >{{$indice+1}}</td>
               <td >{{$detalles->num_control}}</td>
-              <td>{{$detalles->nombre}} {{$detalles->apellido_paterno}} {{$detalles->apellido_materno}}</td>
+              <td> {{$detalles->apellido_paterno}} {{$detalles->apellido_materno}} {{$detalles->nombre}}</td>
             
           
                  <td>{{$detalles->cargo}}</a></td>
@@ -68,12 +71,16 @@
     
 
       <td><a href="/cambio_brigada/{{ $detalles->id_brigada}}/{{$detalles->num_control}}">
-      <?php $ver= DB::table('detalle_brigadas')
+
+      <?php 
+
+      $ver= DB::table('detalle_brigadas')
      ->select('detalle_brigadas.id_brigada')
      ->join('brigadas','brigadas.id_brigada','=','detalle_brigadas.id_brigada')
      ->join('grupos','grupos.id_grupo','=','brigadas.id_grupo')
      ->where('grupos.id_grupo',$idgrup)
      ->count(); 
+
 
 
      $ver2= DB::table('grupos')
@@ -100,6 +107,8 @@ if($detalles->cargo!='jefe' && $ver==$ver2){echo '<button type="button" class="b
 
   
 </table>
+
+</div>
 
 
 

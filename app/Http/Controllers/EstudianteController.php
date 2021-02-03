@@ -57,7 +57,51 @@ class EstudianteController extends Controller
        return redirect()->route('nueva_contraseña');
 
      }else{
-      return view('estudiantes.home_estudiantes');
+
+       $usuario_actual=\Auth::user();
+       if($usuario_actual->tipo_usuario!='estudiante'){
+         return redirect()->back();
+        }
+
+        $id=$usuario_actual->id_user;
+
+     
+        $periodo_semestre = DB::table('semestre')
+        ->select('semestre.id_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first();
+
+        if(empty($periodo_semestre->id_semestre)){
+
+         Session::flash('mess','No hay registros!');
+          return redirect()->route('estudiante');
+        }else {
+
+          $sem = DB::table('semestre')
+        ->select('semestre.nombre_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first(); 
+
+        $sem=$sem->nombre_semestre;
+
+
+
+        $result = DB::table('detalle_grupos')
+        ->select('detalle_grupos.estado','grupos.id_grupo', 'grupos.grupo', 'materias.materia',
+        'grupos.hora_inicio', 'grupos.hora_fin', 'docentes.id_docente',
+        'personas.nombre', 'personas.apellido_paterno', 'personas.apellido_materno')
+        ->join('grupos', 'grupos.id_grupo', '=', 'detalle_grupos.nom_grupo')
+        ->join('docentes', 'grupos.id_docente', '=', 'docentes.id_docente')
+        ->join('personas', 'personas.id_persona', '=', 'docentes.id_persona')
+            ->join('materias', 'grupos.id_materia', '=', 'materias.id_materia')
+
+        ->where([['grupos.bandera','=', '1'], ['detalle_grupos.num_control','=', $id], ['detalle_grupos.estado', '=', 'cursando'],  ['detalle_grupos.semestre', $periodo_semestre->id_semestre]])
+        ->simplePaginate(10);
+
+      return view('estudiantes.home_estudiantes')->with('dato', $result)->with('sem', $sem);
+    }
 
     }
   }
@@ -148,8 +192,9 @@ class EstudianteController extends Controller
     ->join('personas', 'personas.id_persona', '=', 'docentes.id_persona')
     ->join('materias', 'grupos.id_materia', '=', 'materias.id_materia')
     ->where([['grupos.control_cupo', '>', '0'], ['grupos.bandera', '=', '1'],['grupos.id_semestre','=',$periodo_semestre]])
-    ->orderBy('personas.nombre', 'asc')
-    ->simplePaginate(10);
+    ->orderBy('personas.apellido_paterno', 'asc')
+    ->paginate(10);
+
 return view("estudiantes.catalogo_grupos")->with('dato', $result)->with('sem',$sem);
   }
 
@@ -295,8 +340,10 @@ if(empty($aa)){
         $result = DB::table('detalle_grupos')
         ->select('detalle_grupos.estado','grupos.id_grupo', 'grupos.grupo', 'materias.materia',
         'grupos.hora_inicio', 'grupos.hora_fin', 'docentes.id_docente',
-        'personas.nombre', 'personas.apellido_paterno', 'personas.apellido_materno')
+        'personas.nombre', 'personas.apellido_paterno', 'personas.apellido_materno','grupos.dia_uno','grupos.dia_dos','grupos.dia_tres','grupos.dia_cuatro','grupos.dia_cinco','areas.area')
+
         ->join('grupos', 'grupos.id_grupo', '=', 'detalle_grupos.nom_grupo')
+        ->join('areas','areas.id_area','=','grupos.id_area')
         ->join('docentes', 'grupos.id_docente', '=', 'docentes.id_docente')
         ->join('personas', 'personas.id_persona', '=', 'docentes.id_persona')
             ->join('materias', 'grupos.id_materia', '=', 'materias.id_materia')
@@ -306,6 +353,176 @@ if(empty($aa)){
       return  view ('estudiantes.misgrupos')->with('dato', $result)->with('sem', $sem);
     }
   }
+
+
+  public function mis_brigadas(){
+      $usuario_actual=\Auth::user();
+       if($usuario_actual->tipo_usuario!='estudiante'){
+         return redirect()->back();
+        }
+
+        $id=$usuario_actual->id_user;
+
+     
+        $periodo_semestre = DB::table('semestre')
+        ->select('semestre.id_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first();
+
+        if(empty($periodo_semestre->id_semestre)){
+
+         Session::flash('mess','No hay registros!');
+          return redirect()->route('estudiante');
+        }else {
+
+          $sem = DB::table('semestre')
+        ->select('semestre.nombre_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first(); 
+
+        $sem=$sem->nombre_semestre;
+
+
+
+        $result = DB::table('detalle_brigadas')
+        ->select('detalle_brigadas.cargo','brigadas.id_brigada','grupos.grupo','materias.materia','brigadas.nombre_brigada',
+        'grupos.hora_inicio', 'grupos.hora_fin',
+        'personas.nombre', 'personas.apellido_paterno', 'personas.apellido_materno','grupos.dia_uno','grupos.dia_dos','grupos.dia_tres','grupos.dia_cuatro','grupos.dia_cinco','areas.area')
+
+        ->join('brigadas', 'brigadas.id_brigada', '=', 'detalle_brigadas.id_brigada')
+        ->join('grupos','grupos.id_grupo','=','brigadas.id_grupo')
+        ->join('areas','areas.id_area','=','grupos.id_area')
+        ->join('docentes', 'grupos.id_docente', '=', 'docentes.id_docente')
+        ->join('personas', 'personas.id_persona', '=', 'docentes.id_persona')
+        ->join('materias', 'grupos.id_materia', '=', 'materias.id_materia')
+
+        ->where([['grupos.bandera','=', '1'], ['detalle_brigadas.num_control','=', $id], ['detalle_brigadas.estado', '=', 'brigada'],  ['detalle_brigadas.id_semestre', $periodo_semestre->id_semestre]])
+        ->paginate(10);
+      return  view ('estudiantes.misbrigadas')->with('dato', $result)->with('sem', $sem);
+    }
+  }
+
+
+   public function ver_miembros($id_brigada){
+
+   $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='estudiante'){
+       return redirect()->back();
+      }
+    $data = $id_brigada;
+    $num_control=$usuario_actual->id_user;
+
+    $detalle=DB::table('brigadas')
+      ->select('brigadas.nombre_brigada','brigadas.cupo_brigada','brigadas.control_brigada','personas.nombre','personas.apellido_paterno','personas.apellido_materno','estudiantes.num_control','detalle_brigadas.cargo')
+      ->join('detalle_brigadas','brigadas.id_brigada','=','detalle_brigadas.id_brigada')
+      ->join('estudiantes','detalle_brigadas.num_control','=','estudiantes.num_control')
+      ->join('personas','estudiantes.id_persona','=','personas.id_persona')
+     ->where([['brigadas.id_brigada','=',$data],['detalle_brigadas.num_control','!=',$num_control]])
+     ->orderBy('personas.apellido_paterno','asc')
+     ->paginate(10);
+
+    return view("estudiantes.miembros_brigada")->with('detalle', $detalle); 
+
+
+     
+  }
+
+
+public function practicas_estudiante(){
+      $usuario_actual=\Auth::user();
+       if($usuario_actual->tipo_usuario!='estudiante'){
+         return redirect()->back();
+        }
+
+        $id=$usuario_actual->id_user;
+
+     
+        $sem= DB::table('semestre')
+        ->select('semestre.id_semestre','semestre.nombre_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first();
+
+        $sem=$sem->id_semestre;
+
+        $sem2= DB::table('semestre')
+        ->select('semestre.id_semestre','semestre.nombre_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first();
+
+        
+        $sem2=$sem2->nombre_semestre;
+
+
+        $vales=DB::table('vales')
+        ->select('vales.id_vale','solicitudes.id_solicitud','grupos.grupo','solicitudes.fecha_prestamo','solicitudes.hora_inicio_sol','solicitudes.hora_fin_sol','vales.estado_vale','areas.area')
+        
+        ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud')
+        ->join('grupos','solicitudes.id_grupo','=','grupos.id_grupo')
+        ->join('areas','vales.id_area','=','areas.id_area')
+        ->join('vale_estudiante','vales.id_vale','=','vale_estudiante.id_vale')
+        ->join('estudiantes','vale_estudiante.num_control','=','estudiantes.num_control')
+        ->where([['estudiantes.num_control','=',$id],['solicitudes.estado','=','aprobada'],['vales.estado_vale','=','pendiente'],['solicitudes.id_semestre','=',$sem]])
+        ->paginate(5);
+
+        
+
+      
+      return  view ('estudiantes.mis_practicas')->with('dato', $vales)->with('sem2', $sem2);
+    }
+
+
+
+
+public function practicas_estudiante_curso(){
+      $usuario_actual=\Auth::user();
+       if($usuario_actual->tipo_usuario!='estudiante'){
+         return redirect()->back();
+        }
+
+        $id=$usuario_actual->id_user;
+
+     
+        $sem= DB::table('semestre')
+        ->select('semestre.id_semestre','semestre.nombre_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first();
+
+        $sem=$sem->id_semestre;
+
+        $sem2= DB::table('semestre')
+        ->select('semestre.id_semestre','semestre.nombre_semestre')
+        ->where('semestre.estatus_semestre', '=', 'actual')
+        ->take(1)
+        ->first();
+
+        
+        $sem2=$sem2->nombre_semestre;
+
+
+        $vales=DB::table('vales')
+        ->select('vales.id_vale','solicitudes.id_solicitud','grupos.grupo','solicitudes.fecha_prestamo','solicitudes.hora_inicio_sol','solicitudes.hora_fin_sol','vales.estado_vale','areas.area')
+        
+        ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud')
+        ->join('grupos','solicitudes.id_grupo','=','grupos.id_grupo')
+        ->join('areas','vales.id_area','=','areas.id_area')
+        ->join('vale_estudiante','vales.id_vale','=','vale_estudiante.id_vale')
+        ->join('estudiantes','vale_estudiante.num_control','=','estudiantes.num_control')
+        ->where([['estudiantes.num_control','=',$id],['solicitudes.estado','=','aprobada'],['vales.estado_vale','=','en curso'],['solicitudes.id_semestre','=',$sem]])
+        ->paginate(5);
+
+        
+
+      
+      return  view ('estudiantes.mis_practicas_curso')->with('dato', $vales)->with('sem2', $sem2);
+    }
+  
+
+
 
 
 

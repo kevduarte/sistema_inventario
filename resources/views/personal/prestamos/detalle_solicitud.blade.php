@@ -15,7 +15,8 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Prestamos</a></li>
-              <li class="breadcrumb-item active">aprobados</li>
+              <li class="breadcrumb-item"><a href="{{route('solicitudes_area')}}">solicitudes de material</a></li>
+              <li class="breadcrumb-item active">detalles</li>
             </ol>
           </div>
         </div>
@@ -82,9 +83,10 @@
                 </div>
                 </div>
 
+    <div class="table-responsive">
 
   <table class="table table-bordered table-striped" id="font2"  >
-       <h2>Vales de reguardo</h2>
+       <h2>Vales de resguardo</h2>
 
                                  <thead>
                                    <tr>
@@ -97,7 +99,7 @@
 
                                      
                                      
-                                     <th colspan="4" >ACCIONES</th>
+                                     <th colspan="2" >ACCIONES</th>
                                    </tr>
                                  </thead>
                                  <tbody>
@@ -115,14 +117,9 @@
 
                                         <td><a href="/detalles_vale/{{$det->id_vale}}"><button type="button" class="btn btn-primary btn-sm">Detalles <i class="fa fa-bars" aria-hidden="true"></i></button></a></td>
 
-                                    
+                    
 
-                                        <td>  <a href="/entregar_vale/{{$det->id_vale}}"><?php if($det->estado_vale=='pendiente'){echo '<button type="button" class="btn btn-warning btn-sm" >Entregar <i class="fa fa-suitcase" aria-hidden="true"></i></button>';}?> </a></td>
-
-                                          <td>  <a href="/liberar_vale/{{$det->id_vale}}"><?php if($det->estado_vale=='en curso'){echo '<button type="button" class="btn btn-success btn-sm" onclick="preguntar(event)">Liberar <i class="fa fa-check" aria-hidden="true"></i></button>';}?> </a></td>
-
-                                           <td>  <a  href="/retener_vale/{{$det->id_vale}}"><?php if($det->estado_vale=='en curso'){echo '<button type="button" class="btn btn-danger btn-sm" onclick="preguntar(event)">Retener <i class="fa fa-ban" aria-hidden="true"></i></button>';}?> </a></td>
-
+                              
 
 
                                         </tr>
@@ -131,20 +128,10 @@
                                 </table>
   
                                 {{ $detalle->links() }}
+
+                              </div>
                          </div>
                          @endsection
 
 
-                         <script type="text/javascript">
-                           function enviar() {
-  alert('enviado');
-}
-
-function preguntar(event) {
-  var opcion = confirm("Desea enviar el formulario");
-  if(!opcion) {
-    event.preventDefault();
-  }
-}
-
-                         </script>
+                        

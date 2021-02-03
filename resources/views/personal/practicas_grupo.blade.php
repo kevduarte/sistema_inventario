@@ -30,6 +30,7 @@
       <strong>{{ Session::get('message') }}</strong>
     </div>
     @endif
+        <div class="table-responsive">
 
   <table class="table table-bordered" id="font2">
   <h2 style= "font-family:Initial;">Grupos registrados para el uso del laboratorio durante el semestre:{{$name}}</h2>
@@ -94,7 +95,7 @@
  @endif   
 
 
-
+</div>
 
 </div>
 

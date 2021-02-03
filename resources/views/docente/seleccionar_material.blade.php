@@ -39,7 +39,7 @@
   @endif
 
   <div class="container" id="font1">
-    </br>
+    <br>
  
     <form method="POST" action="{{ route('agregar_material') }}">
       @csrf
@@ -83,6 +83,8 @@
 <!--ESTA TABLA TABLA APARECE CUANDO SE HACE LA BUSQUEDA -->
  @if(isset($matcar))
  <div class="container">
+  <div class="table-responsive">
+
   <table class="table table-bordered" id="font5">
    <h2>Relación de materiales a utilizar durante la práctica</h2>
    <thead class="thead-dark">
@@ -93,7 +95,7 @@
       <th scope="col">CLAVE</th>
       <th scope="col">MODELO</th>
       <th scope="col">MARCA</th>
-      <th scope="col">DISPONIBLES</th>
+      <th scope="col">PIEZAS</th>
       <th scope="col">OPCIONES</th>
 
 
@@ -119,18 +121,21 @@
     @endforeach
 
   </tbody>
+
 </table>
+@if($matcar->count()==0)
+<h2 style= "font-family: 'Segoe UI'; font-weight:900; width: auto; height: auto; align-content: center; background-color:#FFE739;">Aún no ha agregado materiales a la lista</h2>  
+
+ @endif 
+</div>
 {{ $matcar->links() }}
 
 </div>
 @endif
 
-@if($matcar->count()==0)
-<h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:#FFE739;">Aún no ha agregado materiales a la lista</h2>  
 
- @endif 
 
- </br>
+ <br>
 
   <form method="POST" action="{{ route('solicitud_enviada') }}">
       @csrf
@@ -148,6 +153,21 @@
 
 </form>
 
+<?php  
+
+if ($tipo=='1') {
+echo ' <p style="color: #002A6C;" align="left"><span style="color: red;"><strong>nota:</strong></span> Los materiales seleccionados se asignan uno por brigada</p>';
+}
+if ($tipo=='2') {
+  echo ' <p style="color: #002A6C;" align="left"><span style="color: red;"><strong>nota:</strong></span> Grupal</p>';
+}
+if ($tipo=='3') {
+  echo ' <p style="color: #002A6C;" align="left"><span style="color: red;"><strong>nota:</strong></span> Individual</p>';
+}
+
+?>
+
+  
 
 </div>
 

@@ -36,6 +36,111 @@ use Illuminate\Support\Facades\Response as FacadeResponse;
 
 class ListasPdf extends Controller
 {
+
+
+  protected function lista_grupo($id_grupo,$id_docente){
+    $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='docente'){
+      return redirect()->back();
+    }
+
+ $id=$usuario_actual->id_user;
+
+ $id_doce = DB::table('docentes')
+  ->select('docentes.id_persona','docentes.id_docente','personas.nombre')
+  ->join('personas', 'personas.id_persona', '=' ,'docentes.id_persona')
+  ->join('users', 'users.id_persona', '=' ,'personas.id_persona')
+  ->where('users.id_user', $id)
+  ->take(1)
+  ->first();
+
+  $id_p=$id_doce->nombre;
+
+  $id_doce = DB::table('docentes')
+  ->select('docentes.id_persona','docentes.id_docente','personas.apellido_paterno')
+  ->join('personas', 'personas.id_persona', '=' ,'docentes.id_persona')
+  ->join('users', 'users.id_persona', '=' ,'personas.id_persona')
+  ->where('users.id_user', $id)
+  ->take(1)
+  ->first();
+
+  $id_pat=$id_doce->apellido_paterno;
+
+  $id_doce = DB::table('docentes')
+  ->select('docentes.id_persona','docentes.id_docente','personas.apellido_materno')
+  ->join('personas', 'personas.id_persona', '=' ,'docentes.id_persona')
+  ->join('users', 'users.id_persona', '=' ,'personas.id_persona')
+  ->where('users.id_user', $id)
+  ->take(1)
+  ->first();
+
+  $id_mat=$id_doce->apellido_materno;
+
+$nombre_doc=$id_p." ".$id_pat." ".$id_mat;
+
+
+
+
+      $id_d=$id_docente;
+      $id_g= $id_grupo;
+        
+       $periodo_semestre = DB::table('semestre')
+      ->select('semestre.id_semestre', 'semestre.inicio_semestre', 'semestre.final_semestre','semestre.nombre_semestre')
+      ->where('semestre.estatus_semestre', '=', 'actual')
+      ->take(1)
+      ->first();
+
+      $result = DB::table('grupos')
+      ->select('estudiantes.num_control','grupos.grupo', 'personas.nombre',
+               'personas.apellido_paterno', 'personas.apellido_materno','detalle_grupos.estado')
+
+      ->join('detalle_grupos', 'detalle_grupos.nom_grupo', '=', 'grupos.id_grupo')
+      ->join('estudiantes', 'estudiantes.num_control', '=', 'detalle_grupos.num_control')
+    
+      ->join('personas', 'personas.id_persona', '=', 'estudiantes.id_persona')
+
+      ->where([['grupos.bandera', '=' , '1'], ['grupos.id_docente', $id_d], 
+    ['detalle_grupos.nom_grupo', $id_g],
+    ['detalle_grupos.semestre', $periodo_semestre->id_semestre]])
+      ->orderBy('personas.apellido_paterno', 'asc')
+      ->get();
+
+      $datos_extra = DB::table('grupos')
+      ->select('grupos.grupo', 'grupos.hora_inicio',
+                'grupos.hora_fin','materias.materia', 'personas.nombre', 'personas.apellido_paterno', 'personas.apellido_materno')
+      ->join('docentes', 'docentes.id_docente', '=', 'grupos.id_docente')
+      ->join('personas', 'personas.id_persona', '=', 'docentes.id_persona')
+      ->join('materias', 'materias.id_materia', '=', 'grupos.id_materia')
+      ->where([['grupos.bandera', '=' , '1'], ['grupos.id_docente', $id_d], ['grupos.id_grupo', $id_g], ['grupos.id_semestre', $periodo_semestre->id_semestre]])
+      ->take(1)
+      ->first();
+
+      $tex=DB::table('textos')
+    ->select('textos.frase_cabecera','textos.lema_uno','textos.lema_dos','textos.telefono','textos.pagina')
+    ->where('textos.id_texto','=','1')
+    ->take(1)
+    ->first();
+
+      $frase1=$tex->frase_cabecera;
+     $frase2=$tex->lema_uno;
+     $frase3=$tex->lema_dos;
+     $frase4=$tex->telefono;
+     $frase5=$tex->pagina;
+
+
+
+      $paper_orientation = 'letter';
+      $customPaper = array(2.5,2.5,600,950);
+
+   $pdf = PDF::loadView('docente.listadeasistencia', ['dato' =>  $result, 
+   'datos_extra' => $datos_extra , 'semestre' => $periodo_semestre,'nom' => $nombre_doc,'cabecera' => $frase1,'ate1' => $frase2,'ate2' => $frase3,'telef' => $frase4,'pagina' => $frase5])
+
+  ->setPaper($customPaper,$paper_orientation);
+   return $pdf->stream('lista_asistencia.pdf');
+   $paper_orientation = 'letter';
+   $customPaper = array(2.5,2.5,600,950);
+  }
+
     protected function generar_vale_adeudo($id_vales){
     $usuario_actual=\Auth::user();
      if($usuario_actual->tipo_usuario!='area'){

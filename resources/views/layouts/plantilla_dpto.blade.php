@@ -39,7 +39,8 @@
 <body class="hold-transition sidebar-mini layout-fixed">
   <!-- Site wrapper -->
   <div class="wrapper">
-    <!-- Navbar -->
+    
+     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background-color: #AFAFAF;border-radius: 0px 0px 0px 0px; -moz-border-radius: 0px 0px 0px 0px; -moz-box-shadow: 10px 10px 5px -4px rgba(61,61,61,1); -webkit-border-radius: 0px 0px 0px 0px; -webkit-box-shadow: 10px 10px 5px -4px rgba(61,61,61,1); border: 0px solid #000000;">
       <!-- Left navbar links -->
 
@@ -64,7 +65,7 @@
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <span class="dropdown-item dropdown-header">mensajes</span>
           <div class="dropdown-divider"></div>
-          <a href="" class="dropdown-item">
+          <a href="#" class="dropdown-item">
             <i class="fas fa-users mr-2"></i>
             
           </a>
@@ -86,29 +87,30 @@
         </div>
       </li>
 
-       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">CUENTA</a>
-      </li>
 
-      <li class="nav-item">
 
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="mr-2 d-none d-lg-inline text-gray-600 small"></span> </a>
-        <!-- Dropdown - User Information -->
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href={{ route('cuenta_admin')}}  >
-            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
-            Configuración de cuenta
-          </a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
-            Cerrar Sesión
-          </a>
-        </div>
-      </li>
+              <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Cuenta </span></a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{{ route('cuenta_admin')}}" >
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
+                    Configuración de cuenta
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
+                    Cerrar Sesión
+                  </a>
+                </div>
+              </li>
+
+        
 
     </ul>
+
+      
+     
 
 
   </nav>
@@ -135,7 +137,7 @@
           <img src="{{asset('image/topo.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-         <a href="{{route ('departamento')}}" class="d-block">
+         <a href="{{route ('departamento')}}" class="d-block" id="didacinfo">
           <span style="font-family:Lucida Sans Unicode;">
           <?php $usuario_actual=Auth::user()->id_user;
           $id=$usuario_actual;
@@ -202,20 +204,20 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href={{ route('registro_material')}} class="nav-link">
+                <a href="{{ route('registro_material')}}" class="nav-link">
                   <i class="fa fa-plus-circle nav-icon"></i>
                   <p>Registrar</p>
                 </a>
               </li>
                <li class="nav-item">
-                <a href={{ route('materiales_activos')}} class="nav-link">
+                <a href="{{ route('materiales_activos')}}" class="nav-link">
                   <i class="fa fa-check nav-icon"></i>
                   <p>Materiales Activos</p>
                 </a>
               </li>
                
                <li class="nav-item">
-                <a href={{ route('material_inactivo')}} class="nav-link">
+                <a href="{{ route('material_inactivo')}}" class="nav-link">
                   <i class="fa fa-ban nav-icon"></i>
                   <p>Materiales Inactivos</p>
                 </a>
@@ -230,7 +232,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                <a href={{ route('registro_tipo_dpto')}} class="nav-link">
+                <a href="{{ route('registro_tipo_dpto')}}" class="nav-link">
                   <i class="fa fa-plus nav-icon"></i>
                   <p>Nueva</p>
                 </a>
@@ -256,20 +258,20 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href={{ route('registro_personal_dpto')}} class="nav-link">
+                <a href="{{ route('registro_personal_dpto')}}" class="nav-link">
                   <i class="fa fa-user-plus nav-icon"></i>
                   <p>Registar</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href= {{ route('personal_registrado_dpto')}} class="nav-link">
+                <a href="{{ route('personal_registrado_dpto')}}" class="nav-link">
                   <i class="fa fa-list-alt nav-icon"></i>
                   <p>Personal registrado</p>
                 </a>
               </li>
              
                  <li class="nav-item">
-                <a href= {{ route('alta_personal_dpto')}} class="nav-link">
+                <a href="{{ route('alta_personal_dpto')}}" class="nav-link">
                   <i class="fa fa-user nav-icon"></i>
                   <p>Alta personal</p>
                 </a>
@@ -293,13 +295,13 @@
             </a>
             <ul class="nav nav-treeview">
                <li class="nav-item">
-                <a href= {{ route('docente_activo_dpto')}} class="nav-link">
+                <a href="{{ route('docente_activo_dpto')}}" class="nav-link">
                   <i class="fa fa-check-square nav-icon"></i>
                   <p>Docentes Activos</p>
                 </a>
               </li>
                 <li class="nav-item">
-                <a href={{ route('docente_inactivo_dpto')}} class="nav-link">
+                <a href="{{ route('docente_inactivo_dpto')}}" class="nav-link">
                   <i class="fa fa-ban nav-icon"></i>
                   <p>Docentes Inactivos</p>
                 </a>
@@ -320,13 +322,13 @@
             </a>
             <ul class="nav nav-treeview">
                <li class="nav-item">
-                <a href= {{ route('encargado_activo_dpto')}} class="nav-link">
+                <a href="{{ route('encargado_activo_dpto')}}" class="nav-link">
                   <i class="fa fa-check-square nav-icon"></i>
                   <p>Encargados activos</p>
                 </a>
               </li>
                 <li class="nav-item">
-                <a href= {{ route('encargado_inactivo_dpto')}} class="nav-link">
+                <a href="{{ route('encargado_inactivo_dpto')}}" class="nav-link">
                   <i class="fa fa-ban nav-icon"></i>
                   <p>Encargados inactivos</p>
                 </a>
@@ -347,7 +349,7 @@
             </a>
             <ul class="nav nav-treeview">
                <li class="nav-item">
-                <a href={{ route('jefe_lab_dpto')}} class="nav-link">
+                <a href="{{ route('jefe_lab_dpto')}}" class="nav-link">
                   <i class="fa fa-eye nav-icon"></i>
                   <p>Ver</p>
                 </a>
@@ -381,7 +383,7 @@
                 </a>
                  <ul class="nav nav-treeview">
                   <li class="nav-item">
-                <a href={{ route('reporte_eliminados')}} class="nav-link">
+                <a href="{{ route('reporte_eliminados')}}" class="nav-link">
                   <i class="fa fa-trash nav-icon"></i>
                   <p>Baja definitiva</p>
                 </a>
@@ -389,7 +391,7 @@
                 </ul>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                <a href={{ route('reporte_temporal')}} class="nav-link">
+                <a href="{{ route('reporte_temporal')}}" class="nav-link">
                   <i class="fa fa-eraser nav-icon"></i>
                   <p>Baja temporal</p>
                 </a>
@@ -426,7 +428,7 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href={{ route('nuevo_semestre')}} class="nav-link">
+                <a href="{{ route('nuevo_semestre')}}" class="nav-link">
                   <i class="fa fa-list-alt nav-icon"></i>
                   <p>Nuevo</p>
                 </a>
@@ -453,7 +455,7 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" style="background-image: url('/image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF ;">
+  <div class="content-wrapper" style="background-image: url('/image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF;">
     <!-- Main content -->
     @yield('seccion')
     <!-- /.content -->

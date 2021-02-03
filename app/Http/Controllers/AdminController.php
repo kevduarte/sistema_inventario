@@ -175,17 +175,17 @@ public function registrar_tipos(Request $request)
 
 //registro de areas.
 public function registro_materias(){
-    $usuario_actual=\Auth::user();
-     if($usuario_actual->tipo_usuario!='admin'){
-       return redirect()->back();
-      }
+  $usuario_actual=\Auth::user();
+  if($usuario_actual->tipo_usuario!='admin'){
+   return redirect()->back();
+ }
 
-  $materias = DB::table('materias')
-  ->select('materias.id_materia','materias.materia','materias.bandera')
-  ->where('materias.bandera', '=', '1')
-  ->orderBy('materias.updated_at','DESC')
-  ->Paginate(8);
-  return view('admin.registro_materias',compact ('usuarios'))->with('materias',$materias);
+ $materias = DB::table('materias')
+ ->select('materias.id_materia','materias.materia','materias.bandera')
+ ->where('materias.bandera', '=', '1')
+ ->orderBy('materias.updated_at','desc')
+ ->paginate(5);
+ return view('admin.registro_materias')->with('materias',$materias);
 }
 
 
@@ -248,8 +248,8 @@ public function registro_area(){
       }
 	$area = DB::table('areas')
 	->select('areas.id_area','areas.area','areas.bandera')
-
-	->simplePaginate(5);
+  ->orderBy('areas.updated_at','desc')
+	->paginate(5);
 	return view('admin.registro_areas')->with('areas',$area);
 }
 
@@ -313,6 +313,8 @@ public function registro_personal(){
  }
 	return view('admin.registro_personal');
 }
+
+
 
 public function registrar_personal(Request $request){
 	 $usuario_actual=\Auth::user();
@@ -468,7 +470,7 @@ return redirect()->route('personal_registrado');
 
       $area=DB::table('areas')
       ->select('areas.id_area','areas.area')
-      ->where('areas.area','!=','laboratorio')
+      ->where('areas.area','!=','LABORATORIO')
       ->get();
 
     

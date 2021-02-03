@@ -74,6 +74,8 @@
 </br>
 
 <div class="container">
+      <div class="table-responsive">
+
       <table class="table table-bordered" id="font5">
      <h2 style= "font-family: 'initial';">Materias registradas</h2>
     <thead class="thead-dark">
@@ -100,8 +102,10 @@
    
   </tbody>
 </table>
-</br>
+{{ $materias->links() }}
 
+<br>
+</div>
    </div>
 
 

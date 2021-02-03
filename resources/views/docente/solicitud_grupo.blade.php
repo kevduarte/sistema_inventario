@@ -45,7 +45,7 @@
   </div>
 
   <div class="container">
-  <h2 style= "font-family: 'Initial';">SOLICITUD DE MATERIAL PARA EL ÁREA DE {{$dato->area}}</h2>
+  <h2 style= "font-family: 'Arial';">SOLICITUD DE MATERIAL PARA EL ÁREA DE {{$dato->area}}</h2>
 
   <br>
   <form method="POST" action="{{ route('solicitud_enviar') }}">
@@ -135,7 +135,7 @@
   <label for="area">*Tipo préstamo</label>
   <div class="input-group ">
   <select name="prestamo" id="prestamo" required class="form-control" autocomplete="prestamo">
-    <option value="">Seleccione un area</option>
+    <option value="">Seleccione un tipo</option>
     @foreach ($presta as $prestas)
     <option value="{!! $prestas->id_prestamo !!}"> {!! $prestas->tipo_prestamo !!}</option>
     @endforeach
@@ -151,14 +151,14 @@
 
   <div class="form-group col-md-4" hidden>
    <label for="grupo">Fecha solicitud</label>
-   <input id="fecha_prestamo" type="text" value="{{$fecha->format('Y-m-j')}}" class="form-control @error('fecha_prestamo') is-invalid @enderror" name="fecha_prestamos" disabled>
+   <input id="fecha_prestamo" type="text" value="{{$fecha->format('Y-m-d')}}" class="form-control @error('fecha_prestamo') is-invalid @enderror" name="fecha_prestamos" disabled>
    @error('fecha_prestamo')
    <span class="invalid-feedback" role="alert">
      <strong>{{ $message }}</strong>
    </span>
    @enderror
   </div>
-   <input id="fecha_prestamo" hidden type="text" name="fecha_prestamo" value="{{$fecha->format('Y-m-j')}}"  >
+   <input id="fecha_prestamo" hidden type="text" name="fecha_prestamo" value="{{$fecha->format('Y-m-d')}}"  >
 
 
      <input id="area" hidden type="text" name="area" value="{{$areas}}"  >

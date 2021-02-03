@@ -54,16 +54,27 @@
                     <div class="info-box-content">
                       
                       <span class="info-box-text" align="center" >Total disponible:</span>
-                      <span class="info-box-number" align="center">{{$num->total}}
-                        <?php if($num->total==1){
+                      <span class="info-box-number" align="center">Cantidad: {{$num->total}}
+                       </span>
+
+                      
+                     
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="info-box bg-warning">
+                    <div class="info-box-content">
+                      <span class="info-box-text" align="center" >Undad de medida:</span>
+                           <span class="info-box-number" align="center"> <?php if($num->total==1){
                           echo $disponible->medida;
                         }else{ 
                           echo $disponible->medida;
                         }?></span>
-                         <div class="progress">
+                            <div class="progress">
                   <div class="progress-bar" style="width:{{$num->total}}%"></div>
-                </div>
-                    </div>
+                </div>    
+                      </div>
                   </div>
                 </div>
                
@@ -73,7 +84,7 @@
                 </div>
                 </div>
 
-
+<div class="table-responsive">
   <table class="table table-bordered" id="font2">
   
    
@@ -83,7 +94,7 @@
         <th scope="col">CÓDIGO INSUMO</th>
       
       <th scope="col">ESTADO</th>
-      <th colspan="1">Acciones</th>
+      <th colspan="1">TOTAL</th>
     
     
     </tr>
@@ -96,7 +107,11 @@
         
 
          <td><div class="progress">
-                  <div class="progress-bar" style="width:{{$uni->total}}%"></div>
+                  
+                  <div class="progress-bar active" role="progressbar" aria-valuenow="{{$uni->total}}"
+  aria-valuemin="0" aria-valuemax="10000" style="width:{{$uni->total}}%">
+    {{$uni->total}}kg.
+  </div>
                 </div></td>
 
       
@@ -121,7 +136,7 @@
 <h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:orange;">No hay registros</h2>  
 
  @endif  
-
+</div>
 
 </div>
 

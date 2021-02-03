@@ -27,33 +27,33 @@
 
               <!-- Small boxes (Stat box) -->
         <div class="row">
-          <div class="col-lg-6 col-6">
+          <div class="col-md-6">
             <!-- small box -->
-            <div class="small-box bg-success">
+            <div class="small-box bg-danger">
               <div class="inner">
                 <h3></h3>
 
                 <p>Grupos</p>
               </div>
               <div class="icon">
-                <i class="fa fa-barcode"></i>
+                <i class="fa fa-users"></i>
               </div>
-              <a href="#" class="small-box-footer">info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="{{ route('mis_grupos')}}" class="small-box-footer">info. <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
-          <div class="col-lg-6 col-6">
+          <div class="col-md-6">
             <!-- small box -->
-            <div class="small-box bg-info">
+            <div class="small-box bg-success">
               <div class="inner">
                 <h3></h3>
 
                 <p>Solicitudes</p>
               </div>
               <div class="icon">
-                <i class="ion ion-person-add"></i>
+                <i class="fa fa-file"></i>
               </div>
-              <a href="#" class="small-box-footer">info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="{{ route('mis_solicitudes')}}" class="small-box-footer">info. <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -79,6 +79,13 @@
     </div>
     @endif
 
+@if (Session::has('mess'))
+    <div class="alert alert-danger alert-block">
+      <button type="button" class="close" data-dismiss="alert">×</button>
+      <strong>{{ Session::get('mess') }}</strong>
+    </div>
+    @endif
+  <div class="table-responsive">
   <table class="table table-bordered" id="font2">
   <h2 style= "font-family:Initial;">Grupos registrados durante el semestre: {{$detalle}}</h2>
    <thead class="thead-dark">
@@ -93,7 +100,7 @@
        <th scope="col">HORARIO</th>
        <th scope="col">DÍAS</th>
         <th scope="col">ÁREA</th>
-              <th colspan="2">ACCIONES</th>
+        <th colspan="2">ACCIONES</th>
 
        
 
@@ -141,6 +148,7 @@
 <h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:orange;">NO TIENE GRUPOS REGISTRADOS</h2>  
 
  @endif   
+</div>
 
 
 
@@ -149,8 +157,6 @@
 
 
 </div>
-
-
 
 
 

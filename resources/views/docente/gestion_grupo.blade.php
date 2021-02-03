@@ -13,8 +13,8 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href={{ route('docente')}}>Docente</a></li>
-              <li class="breadcrumb-item active"><a  href={{ route('mis_grupos')}}>grupos</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('docente')}}">Docente</a></li>
+              <li class="breadcrumb-item"><a  href="{{ route('mis_grupos')}}">grupos</a></li>
                 <li class="breadcrumb-item active">gestionar</li>
             </ol>
           </div>
@@ -37,16 +37,27 @@
       <strong>{{ Session::get('mess') }}</strong>
     </div>
     @endif
+<div class="row">
+
+  <div class="col-sm-12" align="right">
+      <a class="btn btn-info" href="/lista_inscritos/{{$forma->id_grupo}}/{{$forma->id_docente}}" target="_blank"><i class="fa fa-file"></i><span>&nbsp;Lista</span></a>   
+  </div>
+  
+</div>
+   
     
+      <div class="table-responsive">
+
   <table class="table table-bordered" id="font2">
-  <h2 style= "font-family:Initial;">Estudiantes inscritos</h2>
+  <h2 style= "font-family:Arial;">Estudiantes inscritos</h2>
    
     <thead class="thead-dark">
     <tr>
       <!-- el codigo lo creara y sera unico-->
       <th scope="col">N°</th>
-      <th scope="col">N° CONTROL</th>
       <th scope="col">NOMBRE</th>
+            <th scope="col">N° CONTROL</th>
+
        <th scope="col">ESTATUS</th>
 
        
@@ -59,12 +70,14 @@
       @foreach($data as $indice => $detalles)
        <tr>
               <td >{{$indice+1}}</td>
-              <td >{{$detalles->num_control}}</td>
-              <td>{{$detalles->nombre}} {{$detalles->apellido_paterno}} {{$detalles->apellido_materno}}</td>
+              <td>{{$detalles->apellido_paterno}} {{$detalles->apellido_materno}} {{$detalles->nombre}} </td>
+                            <td >{{$detalles->num_control}}</td>
+
                  <td>{{$detalles->estado}}</td>
                   
-          <td ><a href="/desactivar_estudiante_grupo/{{$detalles->id_grupo}}/{{$detalles->num_control}}"><?php if($detalles->estado=='cursando'){echo "Dar de baja";}?></a></td>
-      <td ><a href="/activar_estudiante_grupo/{{$detalles->id_grupo}}/{{$detalles->num_control}}"><?php if($detalles->estado=='baja'){echo "Activar";}?></a></td>
+          <td ><a href="/desactivar_estudiante_grupo/{{$detalles->id_grupo}}/{{$detalles->num_control}}"><?php if($detalles->estado=='cursando'){echo "<span style='height:auto; font-size:12px;' class='right badge badge-danger'>Dar de baja</span>";}?></a></td>
+
+      <td ><a href="/activar_estudiante_grupo/{{$detalles->id_grupo}}/{{$detalles->num_control}}"><?php if($detalles->estado=='baja'){echo "<span style='height:auto; font-size:12px;' class='right badge badge-success'>Activar</span>";}?></a></td>
             
 
              
@@ -75,14 +88,10 @@
          
            
           
-     </tbody>
-
-     <a align="left" > <a href="/lista_inscritos/{{$forma->id_grupo}}/{{$forma->id_docente}}" target="_blank"><i class="fa fa-file"></i> Lista de estudiantes inscritos </a></a>   &nbsp;&nbsp;&nbsp;
-
-     
-
-  
+     </tbody>  
 </table>
+
+</div>
 
 @if (count($data))
   {{ $data->links() }}

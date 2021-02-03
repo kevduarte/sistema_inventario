@@ -14,10 +14,15 @@ class MaterialesController extends Controller
 {
 
 
-    public function registrar_materiales(Request $request)
-    { 
-        $this->validate($request, ['id_material' => ['required', 'unique:materiales'],
-            'num_serie' => ['required', 'unique:unidades']]);
+    public function registrar_materiales(Request $request){
+
+       $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='uno'){
+       return redirect()->back();
+      }
+
+
+        $this->validate($request, ['id_material' => ['required', 'unique:materiales']]);
 
       $data = $request;
       $periodo_semestre = DB::table('semestre')
@@ -126,6 +131,31 @@ class MaterialesController extends Controller
         $data['total']=1;
       }
 
+
+      if($data['medida']=='Bulto' && $data['nombre_material']=='CEMENTO'){
+
+        $bul=50;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
+
+      if($data['medida']=='Bulto' && $data['nombre_material']=='CAL'){
+
+        $bul=25;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
+
        if(empty($contar)){
 
    $conta=$data['cantidad'];
@@ -139,7 +169,7 @@ class MaterialesController extends Controller
     $modelx->medida=$data['medida'];
     $modelx->num_serie = $data['num_serie'];
     $modelx->descripcion = $data['descripcion'];
-    $modelx->total=$data['total'];
+    $modelx->total=$kil;
     $modelx->save();
 
    
@@ -180,12 +210,36 @@ class MaterialesController extends Controller
         $data['cantidad']=1;
       }
 
+       if($data['medida']=='Bulto' && $data['nombre_material']=='CEMENTO'){
+
+        $bul=50;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
+
+      if($data['medida']=='Bulto' && $data['nombre_material']=='CAL'){
+
+        $bul=25;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
+
 
        if(empty($contar)){
 
         DB::table('unidades')
      ->where('id_material', $checa)
-     ->update(['total' =>$data['total']]);
+     ->update(['total' =>$kil]);
      Session::flash('message','¡Material agregado con éxito!');
              return redirect()->route('ver_unidades', ['id_material' => $checa]);
 
@@ -193,7 +247,7 @@ class MaterialesController extends Controller
     
      } else {
 
-      $suma=$data['total']+$contar;
+      $suma=$kil+$contar;
 
       DB::table('unidades')
      ->where('id_material', $checa)
@@ -270,6 +324,9 @@ $producto=DB::table('materiales')
       $data['descripcion']='s/d';
 
     }
+
+   
+
 
     $nuevo_mat = new Material();
     $nuevo_mat->id_material = $valor_mate;

@@ -90,6 +90,7 @@ public function registro_tipo_jefe(){
 
 public function registrar_tiposdpto(Request $request)
 { 
+
    $usuario_actual=\Auth::user();
      if($usuario_actual->tipo_usuario!='jefe'){
        return redirect()->back();
@@ -114,6 +115,14 @@ public function registrar_tiposdpto(Request $request)
 
     public function registrar_materiales(Request $request)
     { 
+
+       $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='jefe'){
+       return redirect()->back();
+      }
+
+
+
         $this->validate($request, [
             'id_material' => ['required', 'unique:materiales'],
             
@@ -226,6 +235,30 @@ public function registrar_tiposdpto(Request $request)
         $data['total']=1;
       }
 
+
+       if($data['medida']=='Bulto' && $data['nombre_material']=='CEMENTO'){
+
+        $bul=50;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
+
+      if($data['medida']=='Bulto' && $data['nombre_material']=='CAL'){
+
+        $bul=25;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
        if(empty($contar)){
 
    $conta=$data['cantidad'];
@@ -239,7 +272,7 @@ public function registrar_tiposdpto(Request $request)
     $modelx->medida=$data['medida'];
     $modelx->num_serie = $data['num_serie'];
     $modelx->descripcion = $data['descripcion'];
-    $modelx->total=$data['total'];
+    $modelx->total=$kil;
     $modelx->save();
 
    
@@ -281,11 +314,35 @@ public function registrar_tiposdpto(Request $request)
       }
 
 
+       if($data['medida']=='Bulto' && $data['nombre_material']=='CEMENTO'){
+
+        $bul=50;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
+
+      if($data['medida']=='Bulto' && $data['nombre_material']=='CAL'){
+
+        $bul=25;
+
+        $kil=$bul*$data['total'];
+
+        $data['medida']='Kilo';
+
+
+      }
+
+
        if(empty($contar)){
 
         DB::table('unidades')
      ->where('id_material', $checa)
-     ->update(['total' =>$data['total']]);
+     ->update(['total' =>$kil]);
      Session::flash('message','¡Material agregado con éxito!');
              return redirect()->route('ver_unidades_jefe', ['id_material' => $checa]);
 
@@ -293,7 +350,7 @@ public function registrar_tiposdpto(Request $request)
     
      } else {
 
-      $suma=$data['total']+$contar;
+      $suma=$kil+$contar;
 
       DB::table('unidades')
      ->where('id_material', $checa)

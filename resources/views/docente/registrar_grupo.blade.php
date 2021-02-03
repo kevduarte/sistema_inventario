@@ -101,18 +101,21 @@
 
     <div class="form-row">
 
-      
+
       <div class="form-group col-md-4">
        <label for="hora_inicio">Hora de entrada</label>
        <input class="form-control"  type="time" oninput="vamos()" min= "08:00" max="20:00" id="hora_inicio" name="hora_inicio" required>
-       
+        <label id="poo" style="font-size: 15px;" ></label><br>
+
      </div>
 
  <input type="text" class="form-control @error('hora_c') is-invalid @enderror" id="hora_c" name="hora_c" hidden>
 
      <div class="form-group col-md-4">
        <label for="hora_fin">Hora de salida </label>
-       <input class="form-control" type="time"  onchange="vamos()"  min="" max="20:00"  value=""  id="hora_fin"  name="hora_fin" required>
+       <input class="form-control" type="time"  onchange="vamos()"  oninput="vamos2()"  min="" max="20:00"  value=""  id="hora_fin"  name="hora_fin" required>
+               <label id="poo2" style="font-size: 15px;" ></label><br>
+
      </div>
 
       <div class="form-group col-md-2">
@@ -216,6 +219,7 @@ function numeros(e) {
 
 
 
+
 function vamos(){
     var ed = document.getElementById('hora_inicio').value; 
    var hours = ed.split(":")[0];
@@ -229,10 +233,24 @@ var nuevo_minuto=parseInt(minutes);
 var primero;
 
 
+if (ed>"19:00" || ed<"08:00") {
+  $('#poo').removeClass('text-success').addClass('text-danger').text('La hora debe estar comprendida en un rango de 8:00am a 07:00pm');
+
+}else{
+    $('#poo').removeClass('text-danger').addClass('text-success').text('Formato valido');
+
+}
+
+if (minutes!="00") {
+   $('#poo').removeClass('text-success').addClass('text-danger').text('Ingrese una hora sin minutos');
+
+}
+
 
 if((nueva_hora >= 7) &&  (nueva_hora <= 9)){
        primero= nueva_hora + 1;
        document.getElementById("hora_fin").min = "0"+primero  + ":" + minutes;
+
 
      }
 
@@ -241,14 +259,30 @@ if((nueva_hora >= 7) &&  (nueva_hora <= 9)){
 
           document.getElementById("hora_fin").min = primero  + ":" + minutes;
 
+
+
         }
     if(nueva_hora == 20){
            primero= nueva_hora + 1;
            document.getElementById("hora_fin").min = primero  + ":" + minutes;
 
+
+
          }
 
+
+
+
 }
+
+
+
+
+
+
+
+
+
 
  function checar_lunes(id){
 

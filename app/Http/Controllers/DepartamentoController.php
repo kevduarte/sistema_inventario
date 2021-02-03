@@ -235,17 +235,15 @@ public function registro_material(){
        return redirect()->back();
       }
 
-    $i=330;
-    $b=55;
-      
+  
 	$id_de_areas = DB::table('areas')
 	->select('areas.id_area', 'areas.area')
-	->where('areas.id_area','!=',$b)
+	->where('areas.area','!=','LABORATORIO')
 	->get();
 
     $id_de_tipos = DB::table('tipos')
 	->select('tipos.id_tipo', 'tipos.tipo')
-	->where('tipos.id_tipo','!=',$i)
+	->where('tipos.tipo','!=','INSUMOS')
 	->get();
 
 	return view('dpto.registro_material')
@@ -1313,7 +1311,7 @@ return redirect()->route('personal_registrado_dpto');
 
       $area=DB::table('areas')
       ->select('areas.id_area','areas.area')
-      ->where('areas.area','!=','laboratorio')
+      ->where('areas.area','!=','LABORATORIO')
       ->get();
 
     

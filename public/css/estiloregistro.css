@@ -1,0 +1,155 @@
+@charset "utf-8";
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+@import url(http://meyerweb.com/eric/tools/css/reset/reset.css);
+@import url(http://fonts.googleapis.com/css?family=Montserrat+Alternates);
+@import url(https://fonts.googleapis.com/css?family=Comfortaa);
+
+/*---estilos css CIVIL NUEVOS*/
+
+#formFooter {
+  padding: 2px;
+  text-align: center;
+ 
+}
+
+
+
+.bg-custom{
+  background-color: #eaeaea;
+}
+
+.bg-custom2{
+  background-color: #1B396A; 
+  border-radius: 7px 7px 7px 7px;
+  -moz-border-radius: 7px 7px 7px 7px;
+  -webkit-border-radius: 7px 7px 7px 7px;
+  border: 0px double #240000
+}
+
+h1 {
+  font-family:Arial Black;
+  font-weight: bold;
+  font-size: 1.8em;
+  line-height: 1.7em;
+  margin-bottom: 10px;
+  text-align: center;
+ }
+
+ h2 {
+
+   font-family: Arial;
+    font-weight: bold;
+    font-size: 1.4em;
+    line-height: 1.7em;
+    margin-bottom: 5px;
+    text-align: center;
+
+  
+  }
+
+  h3 {
+     font-family: Arial;
+     font-weight: bold;
+     font-size: 1.3em;
+     line-height: 1.7em;
+     margin-bottom: 1px;
+     text-align: center;
+    }
+
+ 
+
+ 
+
+ 
+
+h4 {
+    font-family: 'Baloo Bhai', cursive;
+    font-weight: bold;
+     font-size: 1.5em;
+     line-height: 1.7em;
+     margin-bottom: 1px;
+     text-align: center;
+    }
+
+    h5 {
+ font-family: 'Baloo Bhai', cursive;
+  font-weight: bold;
+  font-size: 1.1em;
+  line-height: 1.1em;
+  margin-bottom: 5px;
+  text-align: left;
+ }
+
+ h6 {
+ font-family: 'Baloo Bhai', cursive;
+  font-weight: bold;
+  font-size: 1.7em;
+  line-height: 1.1em;
+  margin-bottom: 10px;
+  text-align: center;
+ }
+
+
+#font2{
+  border-radius: 51px 0px 51px 0px;
+-moz-border-radius: 51px 0px 51px 0px;
+-webkit-border-radius: 51px 0px 51px 0px;
+border: 3px solid #00006b;
+
+-webkit-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+}
+
+#font3{
+background: #FFF9F9;
+text-align: center;
+-webkit-box-shadow: 21px 17px 33px -2px rgba(0,0,0,0.75);
+-moz-box-shadow: 21px 17px 33px -2px rgba(0,0,0,0.75);
+box-shadow: 21px 17px 33px -2px rgba(0,0,0,0.75);
+}
+#font4{
+border-radius: 51px 0px 51px 0px;
+-moz-border-radius: 51px 0px 51px 0px;
+-webkit-border-radius: 51px 0px 51px 0px;
+border: 3px solid #00006b;
+}
+
+.form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 500px;
+  margin: 0 auto 100px;
+  padding: 50px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+.form input {
+ font-family: Arial, Helvetica, sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+
+}
+.form button {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  background: #827BE1;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+body {
+  line-height: 1.5em;
+  
+}

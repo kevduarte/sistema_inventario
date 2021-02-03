@@ -41,6 +41,9 @@
   <div class="container" id="font1">
  
 </br>
+
+    <div class="table-responsive">
+
   <table class="table table-bordered" id="font5">
    <h2>Solicitudes realizadas durante el semestre {{$semestre}} para el área de {{$nombrearea}}</h2>
    <thead class="thead-dark">
@@ -93,13 +96,14 @@
 </table>
 {{ $solicitudes->links() }}
 
-</br>
-
-
 @if($solicitudes->count()==0)
 <h2 style= "font-family: 'Segoe UI'; font-weight:900; background-color:#FFE739;">Aún no ha realizado solicitudes</h2>  
 
  @endif 
+</div>
+</br>
+
+
 
  
 

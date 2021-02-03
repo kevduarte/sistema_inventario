@@ -32,13 +32,12 @@
       <!-- Left navbar links -->
 
       <ul class="navbar-nav">
-
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
         </li>
       </ul>
 
-       <span class="navbar-text" style="font-family:'Segoe IU';">Laboratorio de ingenieria civil.</span>
+       <span class="navbar-text" style="font-family:' Tahoma ';">DPTO. DE CIENCIAS DE LA TIERRA.</span>
 
       <ul class="navbar-nav ml-auto">
 
@@ -75,29 +74,31 @@
         </div>
       </li>
 
-       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">CUENTA</a>
-      </li>
 
-      <li class="nav-item">
 
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="mr-2 d-none d-lg-inline text-gray-600 small"></span> </a>
-        <!-- Dropdown - User Information -->
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href={{ route('cuenta_admin')}}  >
-            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
-            Configuración de cuenta
-          </a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
-            Cerrar Sesión
-          </a>
-        </div>
-      </li>
+              <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Cuenta </span></a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{{ route('cuenta_admin')}}" >
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
+                    Configuración de cuenta
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
+                    Cerrar Sesión
+                  </a>
+                </div>
+              </li>
+
+        
 
     </ul>
+
+      
+     
+
 
   </nav>
   <!-- /.navbar -->
@@ -123,7 +124,7 @@
           <img src="{{asset('image/topo.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
           <div class="info">
-         <a href="{{route ('jefe')}}" class="d-block">
+         <a href="{{route ('jefe')}}" class="d-block" id="didacinfo">
           <span style="font-family:Lucida Sans Unicode;">
           <?php $usuario_actual=Auth::user()->id_user;
           $id=$usuario_actual;
@@ -305,7 +306,7 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" style="background-image: url('image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF  ;">
+  <div class="content-wrapper" style="background-image: url('image/logos_ito/itofondo.png'); background-size: cover; background-position:center; background-repeat: no-repeat; background-color: #FFFFFF;">
 
 
     <!-- Main content -->
@@ -336,10 +337,10 @@
   </aside>
   <!-- /.control-sidebar -->
 
-   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header modal-header-danger">
           <h5 class="modal-title" id="exampleModalLabel">¿Desea cerrar Sesión?</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -357,6 +358,7 @@
       </div>
     </div>
   </div>
+
   
 
 </div>

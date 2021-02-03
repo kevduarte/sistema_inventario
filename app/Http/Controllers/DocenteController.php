@@ -134,7 +134,7 @@ class DocenteController extends Controller
    ->join('materias','grupos.id_materia','=','materias.id_materia')
    ->where([['grupos.id_docente',$id_p],['grupos.bandera', '=', '1'],['grupos.id_semestre', $semestre]])
    ->orderBy('grupos.created_at', 'asc')
-   ->simplePaginate(10);
+   ->paginate(10);
 
    $det=DB::table('semestre')
    ->select('semestre.nombre_semestre')
@@ -195,7 +195,27 @@ class DocenteController extends Controller
   ->first();
   $area=$area->id_area;
 
+  $migrupo=DB::table('grupos')
+  ->select('grupos.control_cupo','grupos.cupo')
+  ->where('grupos.id_grupo',$idg)
+  ->take(1)
+  ->first();
+
+  $cupo=$migrupo->control_cupo;
+  $controlcupo=$migrupo->cupo;
+
+
+
+  if ($cupo==$controlcupo) {
+Session::flash('mes','¡El grupo aún no tiene estudiantes inscritos!');
+        return redirect()->back(); 
+    
+  }
+
+
   $now = new \DateTime();
+
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -286,13 +306,10 @@ $n7=$n6-1;
 $num= array($n,$n2,$n3,$n4,$n5);
 
 
-
 $longitud = count($num);
 
 
-
 $x=[];
-
 
 
 
@@ -319,6 +336,180 @@ $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
 $tipop=DB::table('prestamos')
 ->select('prestamos.id_prestamo','prestamos.tipo_prestamo')
 ->get();
+
+
+//ver si hay una en curso
+
+ $consulta=DB::table('solicitudes')
+  ->select('solicitudes.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->count();
+
+
+
+$qwerty = date('Y-m-d');
+//$qaz="2020-06-08";
+
+if (!empty($consulta)) {
+
+  $consultas=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->take(1)
+  ->first();
+
+  $consultas=$consultas->fecha_prestamo;
+
+
+if($qwerty < $consultas)
+  {
+
+Session::flash('mes','¡Ya tiene una solicitud realizada!');
+return redirect()->route('mis_solicitudes');
+  }
+
+}
+
+
+
+//aca verificamos si hay solicitudes sin terminar
+
+  $checasol=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','pendiente']])
+  ->count();
+
+
+  if (!empty($checasol)) {
+
+  $checasols=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg]])
+  ->take(1)
+  ->first();
+
+  $checasols=$checasols->id_solicitud;
+
+    $chekag=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where('solicitudes.id_solicitud','=',$checasols)
+  ->take(1)
+  ->first();
+
+  $chekag=$chekag->fecha_prestamo;
+    
+
+$qaz = date('Y-m-d');
+//$qaz="2020-06-08";
+
+  
+if($qaz < $chekag)
+  {
+
+Session::flash('mes','¡Tiene una solicitud sin terminar!');
+return redirect()->route('sol_pendientes');
+  }else
+    {
+
+
+$material=DB::table('matcarro')
+  ->select('matcarro.id_material','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente'],['solicitudes.id_solicitud','=',$checasols]])
+  ->take(1)
+  ->first();
+
+  $material=$material->id_material;
+
+
+      $unidades=DB::table('matcarro')
+      ->select('matcarro.id_unidad')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+  ->where('grupos.id_grupo',$idg)
+  ->whereNotNull('matcarro.id_unidad')
+  ->get();
+
+
+       foreach ($unidades as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_unidad;
+           
+
+           DB::table('unidades')
+    ->where('unidades.id_unidad', $ma)
+    ->update(
+      ['estado' => 'disponible']);           
+        }
+
+
+       $matec=DB::table('matcarro')
+      ->select('matcarro.id_material')
+      ->join('materiales','materiales.id_material','=','matcarro.id_material')
+      ->join('unidades','unidades.id_unidad','=','matcarro.id_unidad')
+      ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+      ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+      ->where([['grupos.id_grupo',$idg],['unidades.estado','=','disponible']])
+      ->whereNotNull('matcarro.id_unidad')
+      ->get();
+
+
+
+        /* declaramos el array */
+        $datos_a_insertar = array();
+       
+        /* añadimos los datos al array */
+       foreach ($matec as $j =>$valor8) 
+        {
+
+          $r=$valor8->id_material;
+          $datos_a_insertar[$j]= $r;
+
+
+        }
+
+
+  $materver=DB::table('materiales')
+  ->select('materiales.id_material')
+  ->join('matcarro','materiales.id_material','=','matcarro.id_material')
+  ->where('materiales.bandera','=','1')
+  ->get();
+
+
+     foreach ($materver as $l =>$valor0) 
+        {
+
+          $m=$valor0->id_material;
+
+          $info=count(array_keys($datos_a_insertar, $m));
+          
+
+    DB::table('materiales')
+    ->where('materiales.id_material', $m)
+    ->update(
+      ['n_unidades' => $info]);
+
+         
+           
+        }
+
+DB::table('matcarro')
+->where('matcarro.id_solicitud',$checasols)
+->delete();
+
+
+
+return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
+
+    }
+
+}
+
+
+
 
 return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
 }
@@ -351,6 +542,175 @@ $tipop=DB::table('prestamos')
 ->select('prestamos.id_prestamo','prestamos.tipo_prestamo')
 ->get();
 
+
+
+//ver si hay una en curso
+
+ $consulta=DB::table('solicitudes')
+  ->select('solicitudes.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->count();
+
+
+
+$qwerty = date('Y-m-d');
+//$qaz="2020-06-08";
+
+if (!empty($consulta)) {
+
+  $consultas=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->take(1)
+  ->first();
+
+  $consultas=$consultas->fecha_prestamo;
+
+
+if($qwerty < $consultas)
+  {
+
+Session::flash('mes','¡Ya tiene una solicitud realizada!');
+return redirect()->route('mis_solicitudes');
+  }
+
+}
+
+
+//aca verificamos si hay solicitudes sin terminar
+
+  $checasol=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','pendiente']])
+  ->count();
+
+
+  if (!empty($checasol)) {
+
+  $checasols=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg]])
+  ->take(1)
+  ->first();
+
+  $checasols=$checasols->id_solicitud;
+
+    $chekag=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where('solicitudes.id_solicitud','=',$checasols)
+  ->take(1)
+  ->first();
+
+  $chekag=$chekag->fecha_prestamo;
+    
+
+$qaz = date('Y-m-d');
+//$qaz="2020-06-08";
+
+  
+if($qaz < $chekag)
+  {
+Session::flash('mes','¡Tiene una solicitud sin terminar!');
+
+return redirect()->route('sol_pendientes');
+  }else
+    {
+
+$material=DB::table('matcarro')
+  ->select('matcarro.id_material','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente'],['solicitudes.id_solicitud','=',$checasols]])
+  ->take(1)
+  ->first();
+
+  $material=$material->id_material;
+
+
+      $unidades=DB::table('matcarro')
+      ->select('matcarro.id_unidad')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+  ->where('grupos.id_grupo',$idg)
+  ->whereNotNull('matcarro.id_unidad')
+  ->get();
+
+
+       foreach ($unidades as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_unidad;
+           
+
+           DB::table('unidades')
+    ->where('unidades.id_unidad', $ma)
+    ->update(
+      ['estado' => 'disponible']);           
+        }
+
+
+       $matec=DB::table('matcarro')
+      ->select('matcarro.id_material')
+      ->join('materiales','materiales.id_material','=','matcarro.id_material')
+      ->join('unidades','unidades.id_unidad','=','matcarro.id_unidad')
+      ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+      ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+      ->where([['grupos.id_grupo',$idg],['unidades.estado','=','disponible']])
+      ->whereNotNull('matcarro.id_unidad')
+      ->get();
+
+
+
+        /* declaramos el array */
+        $datos_a_insertar = array();
+       
+        /* añadimos los datos al array */
+       foreach ($matec as $j =>$valor8) 
+        {
+
+          $r=$valor8->id_material;
+          $datos_a_insertar[$j]= $r;
+
+
+        }
+
+
+  $materver=DB::table('materiales')
+  ->select('materiales.id_material')
+  ->join('matcarro','materiales.id_material','=','matcarro.id_material')
+  ->where('materiales.bandera','=','1')
+  ->get();
+
+
+     foreach ($materver as $l =>$valor0) 
+        {
+
+          $m=$valor0->id_material;
+
+          $info=count(array_keys($datos_a_insertar, $m));
+          
+
+    DB::table('materiales')
+    ->where('materiales.id_material', $m)
+    ->update(
+      ['n_unidades' => $info]);
+
+         
+           
+        }
+
+DB::table('matcarro')
+->where('matcarro.id_solicitud',$checasols)
+->delete();
+
+
+
+return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
+    }
+
+}
+
 return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
 }
 
@@ -381,6 +741,175 @@ $tipop=DB::table('prestamos')
 ->select('prestamos.id_prestamo','prestamos.tipo_prestamo')
 ->get();
 
+
+
+//ver si hay una en curso
+
+ $consulta=DB::table('solicitudes')
+  ->select('solicitudes.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->count();
+
+
+
+$qwerty = date('Y-m-d');
+//$qaz="2020-06-08";
+
+if (!empty($consulta)) {
+
+  $consultas=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->take(1)
+  ->first();
+
+  $consultas=$consultas->fecha_prestamo;
+
+
+if($qwerty < $consultas)
+  {
+
+Session::flash('mes','¡Ya tiene una solicitud realizada!');
+return redirect()->route('mis_solicitudes');
+  }
+
+}
+
+
+//aca verificamos si hay solicitudes sin terminar
+
+  $checasol=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','pendiente']])
+  ->count();
+
+
+  if (!empty($checasol)) {
+
+  $checasols=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg]])
+  ->take(1)
+  ->first();
+
+  $checasols=$checasols->id_solicitud;
+
+    $chekag=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where('solicitudes.id_solicitud','=',$checasols)
+  ->take(1)
+  ->first();
+
+  $chekag=$chekag->fecha_prestamo;
+    
+
+$qaz = date('Y-m-d');
+//$qaz="2020-06-08";
+
+  
+if($qaz < $chekag)
+  {
+Session::flash('mes','¡Tiene una solicitud sin terminar!');
+
+return redirect()->route('sol_pendientes');
+  }else
+    {
+
+$material=DB::table('matcarro')
+  ->select('matcarro.id_material','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente'],['solicitudes.id_solicitud','=',$checasols]])
+  ->take(1)
+  ->first();
+
+  $material=$material->id_material;
+
+
+      $unidades=DB::table('matcarro')
+      ->select('matcarro.id_unidad')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+  ->where('grupos.id_grupo',$idg)
+  ->whereNotNull('matcarro.id_unidad')
+  ->get();
+
+
+       foreach ($unidades as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_unidad;
+           
+
+           DB::table('unidades')
+    ->where('unidades.id_unidad', $ma)
+    ->update(
+      ['estado' => 'disponible']);           
+        }
+
+
+       $matec=DB::table('matcarro')
+      ->select('matcarro.id_material')
+      ->join('materiales','materiales.id_material','=','matcarro.id_material')
+      ->join('unidades','unidades.id_unidad','=','matcarro.id_unidad')
+      ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+      ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+      ->where([['grupos.id_grupo',$idg],['unidades.estado','=','disponible']])
+      ->whereNotNull('matcarro.id_unidad')
+      ->get();
+
+
+
+        /* declaramos el array */
+        $datos_a_insertar = array();
+       
+        /* añadimos los datos al array */
+       foreach ($matec as $j =>$valor8) 
+        {
+
+          $r=$valor8->id_material;
+          $datos_a_insertar[$j]= $r;
+
+
+        }
+
+
+  $materver=DB::table('materiales')
+  ->select('materiales.id_material')
+  ->join('matcarro','materiales.id_material','=','matcarro.id_material')
+  ->where('materiales.bandera','=','1')
+  ->get();
+
+
+     foreach ($materver as $l =>$valor0) 
+        {
+
+          $m=$valor0->id_material;
+
+          $info=count(array_keys($datos_a_insertar, $m));
+          
+
+    DB::table('materiales')
+    ->where('materiales.id_material', $m)
+    ->update(
+      ['n_unidades' => $info]);
+
+         
+           
+        }
+
+DB::table('matcarro')
+->where('matcarro.id_solicitud',$checasols)
+->delete();
+
+
+return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
+
+    }
+
+}
+
 return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
 }
 
@@ -389,11 +918,12 @@ return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$are
 for($i=0; $i<$longitud; $i++)
       {
 
-        if($num[$i]>$n6){
+        if($num[$i]>$n7){
          $x[$i]=$num[$i];
         }
      
       }
+
 
   if(empty($x)){
 
@@ -416,8 +946,352 @@ $tipop=DB::table('prestamos')
 ->get();
 
 
+
+//ver si hay una en curso
+
+ $consulta=DB::table('solicitudes')
+  ->select('solicitudes.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->count();
+
+
+
+$qwerty = date('Y-m-d');
+//$qaz="2020-06-08";
+
+if (!empty($consulta)) {
+
+  $consultas=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','aprobada']])
+  ->take(1)
+  ->first();
+
+  $consultas=$consultas->fecha_prestamo;
+
+
+if($qwerty < $consultas)
+  {
+
+Session::flash('mes','¡Ya tiene una solicitud realizada!');
+return redirect()->route('mis_solicitudes');
+  }
+
+}
+
+
+//aca verificamos si hay solicitudes sin terminar
+
+  $checasol=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg],['solicitudes.estado','=','pendiente']])
+  ->count();
+
+
+  if (!empty($checasol)) {
+
+  $checasols=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.id_grupo','=',$idg]])
+  ->take(1)
+  ->first();
+
+  $checasols=$checasols->id_solicitud;
+
+    $chekag=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where('solicitudes.id_solicitud','=',$checasols)
+  ->take(1)
+  ->first();
+
+  $chekag=$chekag->fecha_prestamo;
+    
+
+$qaz = date('Y-m-d');
+//$qaz="2020-06-08";
+
+  
+if($qaz < $chekag)
+  {
+Session::flash('mes','¡Tiene una solicitud sin terminar!');
+
+return redirect()->route('sol_pendientes');
+  }else
+    {
+
+$material=DB::table('matcarro')
+  ->select('matcarro.id_material','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente'],['solicitudes.id_solicitud','=',$checasols]])
+  ->take(1)
+  ->first();
+
+  $material=$material->id_material;
+
+
+      $unidades=DB::table('matcarro')
+      ->select('matcarro.id_unidad')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+  ->where('grupos.id_grupo',$idg)
+  ->whereNotNull('matcarro.id_unidad')
+  ->get();
+
+
+       foreach ($unidades as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_unidad;
+           
+
+           DB::table('unidades')
+    ->where('unidades.id_unidad', $ma)
+    ->update(
+      ['estado' => 'disponible']);           
+        }
+
+
+       $matec=DB::table('matcarro')
+      ->select('matcarro.id_material')
+      ->join('materiales','materiales.id_material','=','matcarro.id_material')
+      ->join('unidades','unidades.id_unidad','=','matcarro.id_unidad')
+      ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+      ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+      ->where([['grupos.id_grupo',$idg],['unidades.estado','=','disponible']])
+      ->whereNotNull('matcarro.id_unidad')
+      ->get();
+
+
+
+        /* declaramos el array */
+        $datos_a_insertar = array();
+       
+        /* añadimos los datos al array */
+       foreach ($matec as $j =>$valor8) 
+        {
+
+          $r=$valor8->id_material;
+          $datos_a_insertar[$j]= $r;
+
+
+        }
+
+
+  $materver=DB::table('materiales')
+  ->select('materiales.id_material')
+  ->join('matcarro','materiales.id_material','=','matcarro.id_material')
+  ->where('materiales.bandera','=','1')
+  ->get();
+
+
+     foreach ($materver as $l =>$valor0) 
+        {
+
+          $m=$valor0->id_material;
+
+          $info=count(array_keys($datos_a_insertar, $m));
+          
+
+    DB::table('materiales')
+    ->where('materiales.id_material', $m)
+    ->update(
+      ['n_unidades' => $info]);
+
+         
+           
+        }
+
+DB::table('matcarro')
+->where('matcarro.id_solicitud',$checasols)
+->delete();
+
+
+return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
+
+    }
+
+}
+  
+
 return view('docente.solicitud_grupo')->with('dato', $result)->with('areas',$area)->with('fecha',$now)->with('nombre',$id_p)->with('ap',$id_pat)->with('idc',$id_d)->with('nueva',$nuevafecha)->with('presta',$tipop);
 }
+
+
+
+
+   public function sol_pendientes(){
+
+      $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='docente'){
+       return redirect()->back();
+      }
+
+    $id_d=$usuario_actual->id_docente;
+  
+
+  $contars=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente']])
+  ->count();
+
+  if (!empty($contars)) {
+
+    $contas=DB::table('matcarro')
+  ->select('solicitudes.id_solicitud','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente']])
+  ->take(1)
+  ->first();
+
+  $contas=$contas->id_solicitud;
+
+
+  $verfecha=DB::table('solicitudes')
+  ->select('solicitudes.fecha_prestamo')
+  ->where('solicitudes.id_solicitud',$contas)
+  ->take(1)
+  ->first();
+
+  $verfecha=$verfecha->fecha_prestamo;
+
+  $wsx = date('Y-m-d');
+
+  if ($wsx>$verfecha) {
+
+
+     $material=DB::table('matcarro')
+  ->select('matcarro.id_material','matcarro.id_matcarro')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->where([['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente'],['solicitudes.id_solicitud','=',$contas]])
+  ->take(1)
+  ->first();
+
+  $material=$material->id_material;
+
+  $idg=DB::table('grupos')
+  ->select('grupos.id_grupo')
+  ->where('grupos.id_docente',$id_d)
+  ->take(1)
+  ->first();
+
+  $idg=$idg->id_grupo;
+
+
+      $unidades=DB::table('matcarro')
+      ->select('matcarro.id_unidad')
+  ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+  ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+  ->where('grupos.id_grupo',$idg)
+  ->whereNotNull('matcarro.id_unidad')
+  ->get();
+
+
+       foreach ($unidades as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_unidad;
+           
+
+           DB::table('unidades')
+    ->where('unidades.id_unidad', $ma)
+    ->update(
+      ['estado' => 'disponible']);           
+        }
+
+
+       $matec=DB::table('matcarro')
+      ->select('matcarro.id_material')
+      ->join('materiales','materiales.id_material','=','matcarro.id_material')
+      ->join('unidades','unidades.id_unidad','=','matcarro.id_unidad')
+      ->join('solicitudes','solicitudes.id_solicitud','=','matcarro.id_solicitud')
+      ->join('grupos','grupos.id_grupo','=','solicitudes.id_grupo')
+      ->where([['grupos.id_grupo',$idg],['unidades.estado','=','disponible']])
+      ->whereNotNull('matcarro.id_unidad')
+      ->get();
+
+
+
+        /* declaramos el array */
+        $datos_a_insertar = array();
+       
+        /* añadimos los datos al array */
+       foreach ($matec as $j =>$valor8) 
+        {
+
+          $r=$valor8->id_material;
+          $datos_a_insertar[$j]= $r;
+
+
+        }
+
+
+  $materver=DB::table('materiales')
+  ->select('materiales.id_material')
+  ->join('matcarro','materiales.id_material','=','matcarro.id_material')
+  ->where('materiales.bandera','=','1')
+  ->get();
+
+
+     foreach ($materver as $l =>$valor0) 
+        {
+
+          $m=$valor0->id_material;
+
+          $info=count(array_keys($datos_a_insertar, $m));
+          
+
+    DB::table('materiales')
+    ->where('materiales.id_material', $m)
+    ->update(
+      ['n_unidades' => $info]);
+
+         
+           
+        }
+
+DB::table('matcarro')
+->where('matcarro.id_solicitud',$contas)
+->delete();
+
+Session::flash('mess','¡No tiene solicitudes pendientes!');
+ return redirect()->back();
+  }
+    
+      $periodo_semestre = DB::table('semestre')
+      ->select('semestre.id_semestre')
+      ->where('semestre.estatus_semestre', '=', 'actual')
+      ->take(1)
+      ->first();
+      $periodo_semestre= $periodo_semestre->id_semestre;
+
+       $semestre = DB::table('semestre')
+      ->select('semestre.nombre_semestre')
+      ->where('semestre.estatus_semestre', '=', 'actual')
+      ->take(1)
+      ->first();
+      $semestre= $semestre->nombre_semestre;
+
+
+
+   $pendientes=DB::table('solicitudes')
+  ->select('solicitudes.id_solicitud','solicitudes.fecha_solicitud','solicitudes.fecha_prestamo','solicitudes.estado','grupos.grupo')
+  ->join('grupos','solicitudes.id_grupo','=','grupos.id_grupo')
+  ->where([['solicitudes.id_semestre', '=', $periodo_semestre],['solicitudes.id_docente','=',$id_d],['solicitudes.estado','=','pendiente'],['solicitudes.id_solicitud','=',$contas]])
+  ->paginate(5);
+
+
+  return view('docente.sol_pendientes')->with('solicitudes',$pendientes)->with('semestre',$semestre);
+
+
+  }
+
+ Session::flash('mess','¡No tiene solicitudes pendientes!');
+ return redirect()->back();
+
+     }
 
 
 
@@ -437,13 +1311,14 @@ public function enviar_solicitud(Request $request){
 
   $id_d=$usuario_actual->id_docente;
 
+
   $data=$request;
   $id_g=$data['id_grupo'];
   //$id_d=$data['id_docente'];
-  $dia=$data['dia'];
+  $dia=$data['dia'];//fecha del dia de la practica
   $area=$data['area'];
-  $fechahoy=$data['fecha_prestamo'];
-  $prestamo=$data['prestamo'];
+  $fechahoy=$data['fecha_prestamo'];//fecha del dia de hoy 
+  $prestamo=$data['prestamo'];//tipo de prestamo
   $hora_inicio_sol=$data['hora_inicio'];
   $hora_fin_sol=$data['hora_fin'];
 
@@ -483,6 +1358,8 @@ if(!empty($sol)){
  return redirect()->back();
 }
 
+//revisa que no exista una solicitud duplicada
+
 $brig=DB::table('brigadas')
 ->select('brigadas.id_brigada')
 ->join('grupos','grupos.id_grupo','=','brigadas.id_grupo')
@@ -492,20 +1369,20 @@ $brig=DB::table('brigadas')
 if($prestamo==1 && $brig==0){
    Session::flash('mess','¡Aún no ha formado brigadas para este grupo!');
  return redirect()->back();
-}
+}//revisa que el grupo tenga brigadas formadas
 
 if($prestamo==1){
 
 
 $solicitud=new Solicitud;
-$solicitud->id_solicitud=$folio;
-$solicitud->fecha_solicitud=$fechahoy;
+$solicitud->id_solicitud=$folio;//folio solicitud
+$solicitud->fecha_solicitud=$fechahoy;//fecha en que se realiza es decir hoy
 $solicitud->id_docente=$id_d;
-$solicitud->fecha_prestamo=$dia;
+$solicitud->fecha_prestamo=$dia;//fecha que sera la practica
 $solicitud->hora_inicio_sol=$hora_inicio_sol;
 $solicitud->hora_fin_sol=$hora_fin_sol;
 $solicitud->id_grupo=$id_g;
-$solicitud->id_prestamo=$prestamo;
+$solicitud->id_prestamo=$prestamo;//tipo de prestamo
 $solicitud->id_semestre=$semestre;
 $solicitud->id_area=$area;
 $solicitud->estado='pendiente';
@@ -521,17 +1398,18 @@ $solicitud->save();
  foreach ($bda as $c =>$valor ) {
  $n=$valor->id_brigada;
   $vale=new Vale;
-  $vale->id_solicitud=$folio;
-  $vale->id_personal=$encargado;
+  $vale->id_solicitud=$folio;//folio de la sol en el vale
+  $vale->id_personal=$encargado;//id del personal del area
   $vale->id_brigada=$n;
   $vale->id_semestre=$semestre;
   $vale->id_area=$area;
-  $vale->fecha_prestamo_vale=$dia;
+  $vale->fecha_prestamo_vale=$dia;//fecha de la practica
   $vale->hora_inicio_vale=$hora_inicio_sol;
   $vale->hora_fin_vale=$hora_fin_sol;
   $vale->estado_vale='pendiente';
   $vale->save();
   }
+  //creamos vales de acuerdo a la cantidad de brigadas
         
 
 }
@@ -551,21 +1429,133 @@ $infosol=$infosol->id_solicitud;
 return redirect()->route('seleccionar_material',['id_solicitud' => $infosol]);
 
 
+}
 
-   //return view('docente.seleccionar_material')->with('solicitud',$infosol)->with('mater',$material);
+
+
+
+if($prestamo==2){
+
+
+$solicitud=new Solicitud;
+$solicitud->id_solicitud=$folio;//folio solicitud
+$solicitud->fecha_solicitud=$fechahoy;//fecha en que se realiza es decir hoy
+$solicitud->id_docente=$id_d;
+$solicitud->fecha_prestamo=$dia;//fecha que sera la practica
+$solicitud->hora_inicio_sol=$hora_inicio_sol;
+$solicitud->hora_fin_sol=$hora_fin_sol;
+$solicitud->id_grupo=$id_g;
+$solicitud->id_prestamo=$prestamo;//tipo de prestamo
+$solicitud->id_semestre=$semestre;
+$solicitud->id_area=$area;
+$solicitud->estado='pendiente';
+$solicitud->save();
+
+
+if($solicitud->save()){
+
+  
+  $vale=new Vale;
+  $vale->id_solicitud=$folio;//folio de la sol en el vale
+  $vale->id_personal=$encargado;//id del personal del area
+  $vale->id_semestre=$semestre;
+  $vale->id_area=$area;
+  $vale->fecha_prestamo_vale=$dia;//fecha de la practica
+  $vale->hora_inicio_vale=$hora_inicio_sol;
+  $vale->hora_fin_vale=$hora_fin_sol;
+  $vale->estado_vale='pendiente';
+  $vale->save();
+  
+  //creamos vales de acuerdo a la cantidad de brigadas
+        
+
+}
+
+
+$infosol=DB::table('solicitudes')
+->select('solicitudes.id_solicitud')
+->where('solicitudes.id_solicitud','=',$folio)
+->take(1)
+->first();
+
+$infosol=$infosol->id_solicitud;
+
+
+
+
+return redirect()->route('seleccionar_material_grupal',['id_solicitud' => $infosol]);
+
+
+
+}
+
+
+
+}
+
+
+
+
+   public function seleccionar_material_grupal($id_solicitud){
+      $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='docente'){
+       return redirect()->back();
+      }
+
+     $id_sol=$id_solicitud;
+
+     $area=DB::table('solicitudes')
+     ->select('solicitudes.id_area')
+     ->where('solicitudes.id_solicitud','=',$id_sol)
+     ->take(1)
+     ->first();
+
+     $area=$area->id_area;
+
+      $namearea=DB::table('areas')
+     ->select('areas.area')
+     ->join('solicitudes','solicitudes.id_area','=','areas.id_area')
+     ->where('solicitudes.id_solicitud','=',$id_sol)
+     ->take(1)
+     ->first();
+
+     $namearea=$namearea->area;
+
+
+
+ $material=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','areas.area','tipos.tipo')
+->join('areas','materiales.id_area','=','areas.id_area')
+->join('tipos','materiales.id_tipo','=','tipos.id_tipo')
+->where([['materiales.id_area','=',$area],['materiales.bandera','=','1'],['materiales.n_unidades','>','0']])
+ ->get();
+
+
+ $matcarro=DB::table('matcarro')
+->select('matcarro.id_material','matcarro.nombre_material','matcarro.clave','matcarro.marca','matcarro.modelo','matcarro.n_unidades','matcarro.area','matcarro.tipo')
+->where([['matcarro.area','=',$area],['matcarro.bandera','=','1'],['matcarro.id_solicitud','=',$id_sol]])
+->distinct()
+->simplePaginate(10);
+
+$tipopre=DB::table('solicitudes')
+->select('prestamos.id_prestamo')
+->join('prestamos','solicitudes.id_prestamo','=','prestamos.id_prestamo')
+->where('solicitudes.id_solicitud',$id_sol)
+->take(1)
+->first();
+
+$tipopre=$tipopre->id_prestamo;
+       
+return view('docente.seleccionar_material_grupal')
+->with('solicitud',$id_sol)->with('mate',$material)->with('matcar',$matcarro)->with('area',$namearea)->with('tipo',$tipopre);
+
+
+  }
+
 
   
 
-
-
-
-
-}
-
-
-
-}
-
+//brigadas
 
    public function seleccionar_material($id_solicitud){
 
@@ -599,7 +1589,7 @@ return redirect()->route('seleccionar_material',['id_solicitud' => $infosol]);
 ->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','areas.area','tipos.tipo')
 ->join('areas','materiales.id_area','=','areas.id_area')
 ->join('tipos','materiales.id_tipo','=','tipos.id_tipo')
-->where([['materiales.id_area','=',$area],['materiales.bandera','=','1']])
+->where([['materiales.id_area','=',$area],['materiales.bandera','=','1'],['materiales.n_unidades','>','0']])
  ->get();
 
 
@@ -608,9 +1598,20 @@ return redirect()->route('seleccionar_material',['id_solicitud' => $infosol]);
 ->where([['matcarro.area','=',$area],['matcarro.bandera','=','1'],['matcarro.id_solicitud','=',$id_sol]])
 ->distinct()
 ->simplePaginate(10);
+
+$tipopre=DB::table('solicitudes')
+->select('prestamos.id_prestamo')
+->join('prestamos','solicitudes.id_prestamo','=','prestamos.id_prestamo')
+->where('solicitudes.id_solicitud',$id_sol)
+->take(1)
+->first();
+
+$tipopre=$tipopre->id_prestamo;
        
 return view('docente.seleccionar_material')
-->with('solicitud',$id_sol)->with('mate',$material)->with('matcar',$matcarro)->with('area',$namearea);
+->with('solicitud',$id_sol)->with('mate',$material)->with('matcar',$matcarro)->with('area',$namearea)->with('tipo',$tipopre);
+
+
   }
 
 
@@ -685,44 +1686,521 @@ Session::flash('mes','¡El material ya fué agregado!');
     return redirect()->back();
 }
 
+
+
 $vales=DB::table('vales')
       ->select('vales.id_vale')
       ->where('vales.id_solicitud','=',$sol)
       ->count();
 
-
-$uni=DB::table('unidades')
+        $uni=DB::table('unidades')
        ->select('unidades.id_unidad','unidades.id_material')
       ->join('materiales','unidades.id_material','=','materiales.id_material')
-      ->where('unidades.id_material','=',$mate)
+      ->where([['unidades.id_material','=',$mate],['unidades.estado','=','disponible']])
       ->take($vales)
       ->get();
 
 
+
+        $unicuenta=DB::table('unidades')
+       ->select('unidades.id_unidad','unidades.id_material')
+      ->join('materiales','unidades.id_material','=','materiales.id_material')
+      ->where([['unidades.id_material','=',$mate],['unidades.estado','=','disponible']])
+      ->count();
+
+
+
       $nuevale=DB::table('vales')
       ->select('vales.id_vale')
-      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud')
-      
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud') 
+      ->where('vales.id_solicitud','=',$sol)
+      ->get();
+
+
+      if($unicuenta<$vales){
+
+
+
+           $unitemp=DB::table('vales')
+       ->select('vales.id_vale')
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud') 
       ->where('vales.id_solicitud','=',$sol)
       ->get();
 
 
 
+  foreach ($unitemp as $dt =>$valor2t ) {
 
-  foreach ($uni as $d =>$valor2 ) {
+ $xt=$valor2t->id_vale;
+
+$carrot=new Matcarro;
+$carrot->id_matcarro=$dt+1;
+$carrot->id_vale=$xt;
+$carrot->id_material=$material;
+$carrot->nombre_material=$nombre;
+$carrot->clave=$clave;
+$carrot->modelo=$modelo;
+$carrot->marca=$marca;
+$carrot->n_unidades=$unidades;
+$carrot->area=$area;
+$carrot->id_solicitud=$sol;
+$carrot->save();
+
+}
+
+
+
+if($carrot->save()){
+
+
+
+
+ $uni3=DB::table('unidades')
+       ->select('unidades.id_unidad','unidades.id_material')
+      ->join('materiales','unidades.id_material','=','materiales.id_material')
+      ->where([['unidades.id_material','=',$mate],['unidades.estado','=','disponible']])
+      ->get();
+
+
+        /* declaramos el array */
+        $datos_a_insertar = array();
+       
+        /* añadimos los datos al array */
+        foreach ($uni3 as $n =>$valor3) 
+        {
+            $datos_a_insertar[$n]= $valor3->id_unidad;
+
+
+             DB::table('unidades')
+    ->where('unidades.id_unidad',  $datos_a_insertar[$n])
+    ->update(
+      ['estado' => 'reservado']);
+           
+        }
+
+         $contar=count($datos_a_insertar);
+
+
+
+  $mte=DB::table('materiales')
+  ->select('materiales.n_unidades')
+  ->where('materiales.id_material','=',$material)
+  ->take(1)
+  ->first();
+
+  $mte=$mte->n_unidades;
+
+$resta=$mte-$contar;
+  
+
+ DB::table('materiales')
+    ->where('materiales.id_material', $material)
+    ->update(
+      ['n_unidades' => $resta]);
+
+
+
+         $inicio=$vales-$unicuenta;
+         $iter=$contar+$inicio;
+
+         for ($i=$contar; $i <$iter ; $i++) { 
+            $datos_a_insertar[$i]= null;
+         }
+
+
+
+         $carrito=DB::table('matcarro')
+         ->select('matcarro.id_matcarro')
+         ->where('matcarro.id_material','=',$material)
+         ->get();
+
+
+         //dd($carrito);
+
+
+          foreach ($carrito as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_matcarro;
+           
+
+           DB::table('matcarro')
+    ->where('matcarro.id_matcarro', $ma)
+    ->update(
+      ['id_unidad' => $datos_a_insertar[$k]]);
+
+        
+           
+        }
+
+      }
+
+
+        return redirect()->route('seleccionar_material',['id_solicitud' => $sol]);
+
+      }
+
+
+
+
+foreach ($uni as $d =>$valor2 ) {
  $x=$valor2->id_unidad;
 $carro=new Matcarro;
+$carro->id_matcarro=$d+1;
+
 $carro->id_material=$material;
 $carro->id_unidad=$x;
 $carro->nombre_material=$nombre;
 $carro->clave=$clave;
 $carro->modelo=$modelo;
 $carro->marca=$marca;
-$carro->n_unidades=$unidades;
+$carro->n_unidades=$vales;
 $carro->area=$area;
 $carro->id_solicitud=$sol;
 $carro->save();
+
+ DB::table('unidades')
+    ->where('unidades.id_unidad', $x)
+    ->update(
+      ['estado' => 'reservado']);
 }
+
+
+
+if($carro->save()){
+
+  $mte=DB::table('materiales')
+  ->select('materiales.n_unidades')
+  ->where('materiales.id_material','=',$material)
+  ->take(1)
+  ->first();
+
+  $mte=$mte->n_unidades;
+
+
+ $carcontar2=DB::table('unidades')
+         ->select('unidades.id_unidad')
+         ->join('matcarro','unidades.id_unidad','=','matcarro.id_unidad')
+         ->where('unidades.id_material','=',$material)
+         ->count();
+
+  $menos=$mte-$carcontar2;
+
+ DB::table('materiales')
+    ->where('materiales.id_material', $material)
+    ->update(
+      ['n_unidades' => $menos]);
+  
+
+        /* declaramos el array */
+        $datos_a_insertar = array();
+       
+        /* añadimos los datos al array */
+        foreach ($nuevale as $n =>$valor3) 
+        {
+            $datos_a_insertar[$n]= $valor3->id_vale;
+           
+        }
+
+         $contar=count($datos_a_insertar);
+
+         //dd($datos_a_insertar);
+
+         $carrito=DB::table('matcarro')
+         ->select('matcarro.id_matcarro')
+         ->where('matcarro.id_material','=',$material)
+         ->get();
+
+
+         //dd($carrito);
+
+          foreach ($carrito as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_matcarro;
+           
+
+           DB::table('matcarro')
+    ->where('matcarro.id_matcarro', $ma)
+    ->update(
+      ['id_vale' => $datos_a_insertar[$k]]);
+
+        
+           
+        }
+
+      }
+
+
+return redirect()->route('seleccionar_material',['id_solicitud' => $sol]);
+
+
+
+
+
+    }
+
+
+    public function agregar_material_grupal(Request $request){
+
+      $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='docente'){
+       return redirect()->back();
+      }
+
+
+      $data=$request;
+      $mate=$data['material'];
+      $sol=$data['solicitud'];
+
+
+
+ $material=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','materiales.id_area','materiales.id_tipo')
+->where([['materiales.id_material','=',$mate],['materiales.bandera','=','1']])
+->take(1)
+->first();
+ $nombre=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','materiales.id_area','materiales.id_tipo')
+->where([['materiales.id_material','=',$mate],['materiales.bandera','=','1']])
+->take(1)
+->first();
+$clave=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.clave','materiales.marca','materiales.modelo','materiales.n_unidades','materiales.id_area','materiales.id_tipo')
+->where([['materiales.id_material','=',$mate],['materiales.bandera','=','1']])
+->take(1)
+->first();
+$modelo=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','materiales.id_area','materiales.id_tipo')
+->where([['materiales.id_material','=',$mate],['materiales.bandera','=','1']])
+->take(1)
+->first();
+$marca=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','materiales.id_area','materiales.id_tipo')
+->where([['materiales.id_material','=',$mate],['materiales.bandera','=','1']])
+->take(1)
+->first();
+$unidades=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','materiales.id_area','materiales.id_tipo')
+->where([['materiales.id_material','=',$mate],['materiales.bandera','=','1']])
+->take(1)
+->first();
+$area=DB::table('materiales')
+->select('materiales.id_material','materiales.nombre_material','materiales.marca','materiales.modelo','materiales.n_unidades','materiales.id_area','materiales.id_tipo')
+->where([['materiales.id_material','=',$mate],['materiales.bandera','=','1']])
+->take(1)
+->first();
+
+
+$material=$material->id_material;
+$nombre=$nombre->nombre_material;
+$clave=$clave->clave;
+$modelo=$modelo->modelo;
+$marca=$marca->marca;
+$unidades=$unidades->n_unidades;
+$area=$area->id_area;
+
+
+
+
+$vales=DB::table('vales')
+      ->select('vales.id_vale')
+      ->where('vales.id_solicitud','=',$sol)
+      ->count();
+
+        $uni=DB::table('unidades')
+       ->select('unidades.id_unidad','unidades.id_material')
+      ->join('materiales','unidades.id_material','=','materiales.id_material')
+      ->where([['unidades.id_material','=',$mate],['unidades.estado','=','disponible']])
+      ->take($vales)
+      ->get();
+
+
+
+        $unicuenta=DB::table('unidades')
+       ->select('unidades.id_unidad','unidades.id_material')
+      ->join('materiales','unidades.id_material','=','materiales.id_material')
+      ->where([['unidades.id_material','=',$mate],['unidades.estado','=','disponible']])
+      ->count();
+
+
+
+      $nuevale=DB::table('vales')
+      ->select('vales.id_vale')
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud') 
+      ->where('vales.id_solicitud','=',$sol)
+      ->get();
+
+
+      if($unicuenta<$vales){
+
+        $resta=$vales-$unicuenta;
+
+
+           $unitemp=DB::table('unidades')
+       ->select('unidades.id_unidad','unidades.id_material')
+      ->join('materiales','unidades.id_material','=','materiales.id_material')
+      ->where([['unidades.id_material','=',$mate],['unidades.estado','=','disponible']])
+      ->take($resta)
+      ->get();
+
+
+
+  foreach ($unitemp as $dt =>$valor2t ) {
+ $xt=$valor2t->id_unidad;
+$carrot=new Matcarro;
+$carrot->id_matcarro=$dt+1;
+$carrot->id_material=$material;
+$carrot->id_unidad=$xt;
+$carrot->nombre_material=$nombre;
+$carrot->clave=$clave;
+$carrot->modelo=$modelo;
+$carrot->marca=$marca;
+$carrot->n_unidades=$unidades;
+$carrot->area=$area;
+$carrot->id_solicitud=$sol;
+$carrot->save();
+}
+
+
+      }
+
+
+
+ $carcontar=DB::table('matcarro')
+         ->select('matcarro.id_unidad')
+         ->where('matcarro.id_material','=',$material)
+         ->count();
+
+
+
+  foreach ($uni as $d =>$valor2 ) {
+ $x=$valor2->id_unidad;
+$carro=new Matcarro;
+$carro->id_matcarro=$d+$carcontar+1;
+
+$carro->id_material=$material;
+$carro->id_unidad=$x;
+$carro->nombre_material=$nombre;
+$carro->clave=$clave;
+$carro->modelo=$modelo;
+$carro->marca=$marca;
+$carro->n_unidades=$vales;
+$carro->area=$area;
+$carro->id_solicitud=$sol;
+$carro->save();
+
+DB::table('unidades')
+    ->where('unidades.id_unidad', $x)
+    ->update(
+      ['estado' => 'reservado']);
+
+}
+
+
+
+if($carro->save()){
+
+
+  $cuentame=DB::table('matcarro')
+  ->select('matcarro.id_material')
+  ->where('matcarro.id_material',$material)
+  ->count();
+
+  if($cuentame>1){
+
+
+       $mte=DB::table('materiales')
+  ->select('materiales.n_unidades')
+  ->where('materiales.id_material','=',$material)
+  ->take(1)
+  ->first();
+
+  $mte=$mte->n_unidades;
+
+
+ $carcontar2=DB::table('unidades')
+         ->select('unidades.id_unidad')
+         ->join('matcarro','unidades.id_unidad','=','matcarro.id_unidad')
+         ->where('unidades.id_material','=',$material)
+         ->count();
+
+         $ver=$carcontar2-1;
+
+  $menos=$mte-$ver;
+
+ DB::table('materiales')
+    ->where('materiales.id_material', $material)
+    ->update(
+      ['n_unidades' => $menos]);
+
+
+        
+
+         $carrito=DB::table('matcarro')
+         ->select('matcarro.id_matcarro')
+         ->where('matcarro.id_material','=',$material)
+         ->get();
+
+          $carritocon=DB::table('matcarro')
+         ->select('matcarro.id_matcarro')
+         ->where('matcarro.id_material','=',$material)
+         ->count();
+
+
+
+
+      $vale=DB::table('vales')
+      ->select('vales.id_vale')
+      ->join('solicitudes','vales.id_solicitud','=','solicitudes.id_solicitud') 
+      ->where('vales.id_solicitud','=',$sol)
+      ->take(1)
+      ->first();
+
+      $vale=$vale->id_vale;
+
+          foreach ($carrito as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_matcarro;
+           
+
+           DB::table('matcarro')
+    ->where('matcarro.id_matcarro', $ma)
+    ->update(
+      ['id_vale' => $vale,'n_unidades' => $carritocon]);
+
+        
+           
+        }
+
+return redirect()->route('seleccionar_material_grupal',['id_solicitud' => $sol]);
+
+
+  }
+
+
+   $mte=DB::table('materiales')
+  ->select('materiales.n_unidades')
+  ->where('materiales.id_material','=',$material)
+  ->take(1)
+  ->first();
+
+  $mte=$mte->n_unidades;
+
+
+ $carcontar2=DB::table('unidades')
+         ->select('unidades.id_unidad')
+         ->join('matcarro','unidades.id_unidad','=','matcarro.id_unidad')
+         ->where('unidades.id_material','=',$material)
+         ->count();
+
+  $menos=$mte-$carcontar2;
+
+ DB::table('materiales')
+    ->where('materiales.id_material', $material)
+    ->update(
+      ['n_unidades' => $menos]);
 
 
         /* declaramos el array */
@@ -740,7 +2218,7 @@ $carro->save();
          //dd($datos_a_insertar);
 
          $carrito=DB::table('matcarro')
-         ->select('matcarro.id_unidad')
+         ->select('matcarro.id_matcarro')
          ->where('matcarro.id_material','=',$material)
          ->get();
 
@@ -750,11 +2228,11 @@ $carro->save();
           foreach ($carrito as $k =>$valor4) 
         {
 
-          $ma=$valor4->id_unidad;
+          $ma=$valor4->id_matcarro;
            
 
            DB::table('matcarro')
-    ->where('matcarro.id_unidad', $ma)
+    ->where('matcarro.id_matcarro', $ma)
     ->update(
       ['id_vale' => $datos_a_insertar[$k]]);
 
@@ -762,8 +2240,10 @@ $carro->save();
            
         }
 
+      }
 
-return redirect()->route('seleccionar_material',['id_solicitud' => $sol]);
+
+return redirect()->route('seleccionar_material_grupal',['id_solicitud' => $sol]);
 
 
 
@@ -790,7 +2270,48 @@ return redirect()->route('seleccionar_material',['id_solicitud' => $sol]);
 
       $sol=$sol->id_solicitud;
 
+      $unidades=DB::table('matcarro')
+      ->select('matcarro.id_unidad')
+      ->where('matcarro.id_material',$material)
+      ->whereNotNull('matcarro.id_unidad')
+      ->get();
+
+       foreach ($unidades as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_unidad;
+           
+
+           DB::table('unidades')
+    ->where('unidades.id_unidad', $ma)
+    ->update(
+      ['estado' => 'disponible']);
+
+        $k1=$k+1;
+           
+        }
+
+
+         $matec=DB::table('materiales')
+      ->select('materiales.n_unidades')
+      ->where('materiales.id_material',$material)
+      ->take(1)
+      ->first();
+
+      $matec=$matec->n_unidades;
+
+      $suma=$matec+$k1;
+
+
+           DB::table('materiales')
+    ->where('materiales.id_material', $material)
+    ->update(
+      ['n_unidades' => $suma]);
+      
+
+
       DB::table('matcarro')->where('id_material', '=', $material)->delete();
+
 
 
 
@@ -800,6 +2321,73 @@ return redirect()->route('seleccionar_material',['id_solicitud' => $sol]);
     }
 
 
+
+     public function quitar_carro_grupal($id_material){
+
+      $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='docente'){
+       return redirect()->back();
+      }
+
+      $material=$id_material;
+
+      $sol=DB::table('matcarro')
+      ->select('matcarro.id_solicitud')
+      ->where('matcarro.id_material','=',$material)
+      ->take(1)
+      ->first();
+
+      $sol=$sol->id_solicitud;
+
+       $unidades=DB::table('matcarro')
+      ->select('matcarro.id_unidad')
+      ->where('matcarro.id_material',$material)
+      ->whereNotNull('matcarro.id_unidad')
+      ->get();
+
+       foreach ($unidades as $k =>$valor4) 
+        {
+
+          $ma=$valor4->id_unidad;
+           
+
+           DB::table('unidades')
+    ->where('unidades.id_unidad', $ma)
+    ->update(
+      ['estado' => 'disponible']);
+
+        $k1=$k+1;
+           
+        }
+
+
+         $matec=DB::table('materiales')
+      ->select('materiales.n_unidades')
+      ->where('materiales.id_material',$material)
+      ->take(1)
+      ->first();
+
+      $matec=$matec->n_unidades;
+
+      $suma=$matec+$k1;
+
+
+           DB::table('materiales')
+    ->where('materiales.id_material', $material)
+    ->update(
+      ['n_unidades' => $suma]);
+
+      DB::table('matcarro')->where('id_material', '=', $material)->delete();
+
+
+
+return redirect()->route('seleccionar_material_grupal',['id_solicitud' => $sol]);
+
+
+    }
+
+
+//enviada por brigada
      public function solicitud_enviada(Request $request){
 
       $usuario_actual=\Auth::user();
@@ -807,9 +2395,7 @@ return redirect()->route('seleccionar_material',['id_solicitud' => $sol]);
        return redirect()->back();
       }
 
-      
-
-      $data=$request;
+    $data=$request;
 
       $id_solicitud=$data['numsol'];
 
@@ -921,10 +2507,120 @@ $nuevos->save();
 
    //return view('docente.mis_solicitudes')->with('solicitudes',$aprobadas);
 
+Session::flash('message','¡Su solicitud ha sido enviada con éxito!');
+return redirect()->route('mis_solicitudes');
+
+}
+
+
+
+     public function solicitud_enviada_grupal(Request $request){
+
+      $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='docente'){
+       return redirect()->back();
+      }
+
+      
+
+      $data=$request;
+
+      $id_solicitud=$data['numsol'];
+
+      $materiales=DB::table('matcarro')
+      ->select('matcarro.id_material')
+      ->where('matcarro.id_solicitud','=',$id_solicitud)
+      ->count();
+
+      if(empty($materiales)){
+    Session::flash('mes','¡Aún no ha seleccionado materiales para la práctica!');
+    return redirect()->back();
+      }
+
+      $contvale=DB::table('vales')
+      ->select('vales.id_vale')
+      ->where('vales.id_solicitud','=',$id_solicitud)
+      ->count();
+
+      $carro=DB::table('matcarro')
+      ->select('matcarro.id_vale','matcarro.id_material','matcarro.id_unidad')
+      ->where('matcarro.id_solicitud','=',$id_solicitud)
+      ->get();
+
+
+
+       $periodo_semestre = DB::table('semestre')
+      ->select('semestre.id_semestre')
+      ->where('semestre.estatus_semestre', '=', 'actual')
+      ->take(1)
+      ->first();
+      $periodo_semestre= $periodo_semestre->id_semestre;
+
+
+      foreach ($carro as $k =>$valor5) 
+        {
+
+          $ma=$valor5->id_vale;
+          $me=$valor5->id_material;
+          $mi=$valor5->id_unidad;
+      
+$nueva=new Vale_material;
+$nueva->id_vale=$ma;
+$nueva->id_material=$me;
+$nueva->id_unidad=$mi;
+$nueva->id_semestre=$periodo_semestre;
+
+$nueva->save();
+        
+           
+        }
+
+
+        
+
+
+        if($nueva->save()){
+
+
+      $borrar=DB::table('matcarro')
+      ->select('matcarro.id_solicitud')
+      ->where('matcarro.id_solicitud','=',$id_solicitud)
+      ->take(1)
+      ->first();
+      $borrar=$borrar->id_solicitud;
+      DB::table('matcarro')->where('id_solicitud', '=', $borrar)->delete();
+
+           DB::table('solicitudes')
+    ->where('solicitudes.id_solicitud', $id_solicitud)
+    ->update(
+      ['estado' => 'aprobada']);
+
+
+
+
+/*
+
+     DB::table('vales')
+    ->where('vales.id_solicitud', $id_solicitud)
+    ->update(
+      ['estado_vale' => 'aprobado']);
+
+*/
+        }
+
+
+
+
+       
+
+
+   //return view('docente.mis_solicitudes')->with('solicitudes',$aprobadas);
+
 
 return redirect()->route('mis_solicitudes');
 
 }
+
 
 
 
@@ -969,8 +2665,9 @@ return redirect()->route('mis_solicitudes');
 
 
         $aprobadas=DB::table('solicitudes')
-  ->select('solicitudes.id_solicitud','solicitudes.fecha_solicitud','solicitudes.fecha_prestamo','solicitudes.estado','grupos.grupo')
+  ->select('solicitudes.id_solicitud','solicitudes.fecha_solicitud','solicitudes.fecha_prestamo','solicitudes.estado','grupos.grupo','areas.area','solicitudes.hora_inicio_sol','solicitudes.hora_fin_sol')
   ->join('grupos','solicitudes.id_grupo','=','grupos.id_grupo')
+  ->join('areas','solicitudes.id_area','=','areas.id_area')
   ->where([['solicitudes.id_semestre', '=', $periodo_semestre],['solicitudes.id_docente','=',$id_p],['solicitudes.estado','=','aprobada']])
   ->paginate(5);
 
@@ -1041,7 +2738,7 @@ return redirect()->route('mis_solicitudes');
 
       $area=DB::table('areas')
       ->select('areas.area','areas.id_area')
-      ->where('areas.area','!=','laboratorio')
+      ->where('areas.area','!=','LABORATORIO')
       ->get();
 
       $materia=DB::table('materias')
@@ -1763,9 +3460,9 @@ return redirect()->route('mis_grupos');
       ->where([['grupos.bandera', '=' , '1'] , ['grupos.id_docente', $id_doc], 
         ['detalle_grupos.nom_grupo', $id],
         ['grupos.id_semestre', $periodo_semestre->id_semestre]])
-      ->orderBy('personas.nombre', 'asc')
+      ->orderBy('personas.apellido_paterno', 'ASC')
       
-      ->simplePaginate(10);
+      ->Paginate(10);
 
       $formar=DB::table('grupos')
       ->select('id_grupo','id_docente')
@@ -2792,6 +4489,7 @@ public function registrar_brigadas_nueva(Request $request){
       ->take(1)
       ->first();
 
+
       if(empty($aa)){
 
  $contar=DB::table('detalle_grupos')
@@ -2833,6 +4531,7 @@ $result = DB::table('detalle_grupos')
  ->where([['detalle_grupos.nom_grupo','=',$grupo],['detalle_grupos.equipo','=',$uno]])
 ->take($cupo)
 ->get();
+
 
 $control = DB::table('brigadas')
  ->select('brigadas.control_brigada')
@@ -2886,10 +4585,18 @@ $control = DB::table('brigadas')
 
   }
 
-   public function inscritos_brigada($id_brigada)
-{
+   public function inscritos_brigada($id_brigada){
+
+     $usuario_actual=\Auth::user();
+     if($usuario_actual->tipo_usuario!='docente'){
+       return redirect()->back();
+      } 
+
+      $iddoc=$usuario_actual->id_docente;
+
 
       $data=$id_brigada;
+
 
       $periodo_semestre = DB::table('semestre')
       ->select('semestre.id_semestre', 'semestre.inicio_semestre', 'semestre.final_semestre')
@@ -2908,7 +4615,7 @@ $control = DB::table('brigadas')
       ->where([['brigadas.bandera', '=' , '1'] ,
        ['detalle_brigadas.id_brigada', $data], ['detalle_brigadas.estado','brigada'],    
        ['brigadas.id_semestre', $periodo_semestre->id_semestre]])
-      ->orderBy('personas.nombre', 'asc')
+      ->orderBy('personas.apellido_paterno', 'asc')
       ->simplePaginate(10);
 
        $name = DB::table('brigadas')
@@ -2948,7 +4655,7 @@ $control = DB::table('brigadas')
 
 
 
-  return view('docente.inscritos_brigada')->with('brig',$result)->with('nbrigada',$name)->with('ngrupo',$nameg)->with('idgrup',$gid);
+  return view('docente.inscritos_brigada')->with('brig',$result)->with('nbrigada',$name)->with('ngrupo',$nameg)->with('idgrup',$gid)->with('data',$iddoc);
 
 }
 

@@ -1,6 +1,6 @@
 @extends('layouts.plantilla_docente')
 @section('title')
-:mis solicitudes
+:solicitudes aprobadas
 @endsection
 
 
@@ -10,7 +10,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1  style="font-size: 2.0em; font-family: 'Constantia'; font-weight: 900;">Mis solicitudes</h1>
+            <h1  style="font-size: 2.0em; font-family: 'Constantia'; font-weight: 900;">Solicitudes aprobadas</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -39,18 +39,24 @@
   @endif
 
   <div class="container" id="font1">
+
+    <br>
  
+    <div class="table-responsive">
 
   <table class="table table-bordered" id="font5">
    <h2>Relación de solicitudes realizadas durante el semestre {{$semestre}}</h2>
    <thead class="thead-dark">
     <tr>
 
-      <th scope="col">CODIGO</th>
+      <th scope="col">FOLIO DE LA SOLICITUD</th>
       <th scope="col">FECHA DE APROBACIÓN</th>
       <th scope="col">DÍA DE PRÁCTICA</th>
       <th scope="col">ESTADO</th>
       <th scope="col">GRUPO</th>
+      <th scope="col">HORARIO</th>
+      <th scope="col">ÁREA DE PRÁCTICA</th>
+
   
 
 
@@ -66,6 +72,10 @@
       <td>{{ $sol->fecha_prestamo}}</td>
       <td>{{ $sol->estado}}</td>
       <td>{{ $sol->grupo}}</td>
+            <td><?php if(empty($sol->hora_inicio_sol)){ $vacio=null; echo $vacio;} else{ echo date("H:i", strtotime($sol->hora_inicio_sol));}?>-<?php if(empty($sol->hora_fin_sol)){ $vacio=null; echo $vacio;} else{ echo date("H:i", strtotime($sol->hora_fin_sol));}?> hrs</td>
+
+            <td>{{ $sol->area}}</td>
+
      
      
 
@@ -87,6 +97,7 @@
  @endif 
 
  
+</div>
 
 
 </div>

@@ -113,7 +113,7 @@
 
   <div class="form-group">
    <div class="col-xs-offset-2 col-xs-9" align="center">
-    <button type="submit" class="btn btn-primary">inscribirse</button>
+    <button type="submit" class="btn btn-success">inscribirse</button>
 
   </div>
 </div>

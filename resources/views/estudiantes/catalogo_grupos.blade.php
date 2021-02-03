@@ -10,7 +10,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1  style="font-size: 2.0em; font-family: 'Constantia'; font-weight: 900;">Grupos </h1>
+            <h1  style="font-size: 2.0em; font-family: 'Constantia'; font-weight: 900;">Grupos disponibles.</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -41,9 +41,10 @@
 
 
 
- 
+   <div class="table-responsive">
+
   <table class="table table-bordered" id="font2">
-   <h2 style= "font-family: 'Initial';">Grupos registrados durante el periodo: {{$sem}}</h2>
+   <h2 style= "font-family: 'Arial';">Grupos registrados durante el periodo: {{$sem}}</h2>
    <thead>
     <tr>
       <th scope="col">GRUPO</th>
@@ -73,7 +74,7 @@
 
     <tr>
 
-      <td>{{$datos->grupo}}</td>
+      <th>{{$datos->grupo}}</th>
       <td>{{$datos->materia}}</td>
 
       <td>{{$datos->nombre}} {{$datos->apellido_paterno}} {{$datos->apellido_materno}}</td>
@@ -81,13 +82,19 @@
      <td><?php if(empty($datos->hora_inicio)){ $vacio=null; echo $vacio;} else{ echo date("H:i", strtotime($datos->hora_inicio));}?>-<?php if(empty($datos->hora_fin)){ $vacio=null; echo $vacio;} else{ echo date("H:i", strtotime($datos->hora_fin));}?> hrs</td>
 
     <td>{{$datos->control_cupo}}</td>
-    <td><a href="inscripcion_grupo/{{ $datos->id_grupo}}"><?php if(empty($usuario)){echo "INSCRIBIRSE";}?></a></td>
+    <td><a href="inscripcion_grupo/{{ $datos->id_grupo}}"><?php if (empty($usuario)) {
 
+echo "<button type='button' class='btn btn-success btn-sm'>Inscribirse <i class='fa fa-address-card' aria-hidden='true'></i></button>";
+} 
+ ?></a></td>
+
+    
 
   </tr>
   @endforeach
 </tbody>
 </table>
+</div>
 
 @if (count($dato))
 {{ $dato->links() }}

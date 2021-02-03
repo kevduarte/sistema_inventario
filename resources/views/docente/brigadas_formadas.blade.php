@@ -103,6 +103,8 @@
      
 
   </br>
+    <div class="table-responsive">
+
   <table class="table table-bordered" id="font3">
   
     <thead class="thead-dark">
@@ -154,6 +156,7 @@
 
   
 </table>
+</div>
 
 
 

@@ -86,29 +86,30 @@
         </div>
       </li>
 
-       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">CUENTA</a>
-      </li>
 
-      <li class="nav-item">
 
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="mr-2 d-none d-lg-inline text-gray-600 small"></span> </a>
-        <!-- Dropdown - User Information -->
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href={{ route('cuenta_admin')}}  >
-            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
-            Configuración de cuenta
-          </a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
-            Cerrar Sesión
-          </a>
-        </div>
-      </li>
+              <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Cuenta </span></a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{{ route('cuenta_admin')}}" >
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
+                    Configuración de cuenta
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
+                    Cerrar Sesión
+                  </a>
+                </div>
+              </li>
+
+        
 
     </ul>
+
+      
+     
 
 
   </nav>
@@ -135,7 +136,7 @@
           <img src="{{asset('image/topo.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-         <a href="{{route ('admin')}}" class="d-block">
+         <a href="{{route ('admin')}}" class="d-block" id="didacinfo">
           <span style="font-family:Lucida Sans Unicode;">
           <?php $usuario_actual=Auth::user()->id_user;
           $id=$usuario_actual;
@@ -202,7 +203,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                <a href={{ route('foto_ito')}} class="nav-link">
+                <a href="{{ route('foto_ito')}}" class="nav-link">
                   <i class="fa fa-upload nav-icon"></i>
                   <p>Nuevo escudo</p>
                 </a>
@@ -218,7 +219,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                <a href={{ route('nuevo_formato')}} class="nav-link">
+                <a href="{{ route('nuevo_formato')}}" class="nav-link">
                   <i class="fa fa-wrench nav-icon"></i>
                   <p>Actualizar</p>
                 </a>
@@ -244,7 +245,7 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href= {{ route('registro_materias')}} class="nav-link">
+                <a href="{{ route('registro_materias')}}"class="nav-link">
                   <i class="fa fa-plus-circle nav-icon"></i>
                   <p>Nueva</p>
                 </a>
@@ -270,7 +271,7 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href= {{ route('registro_area')}} class="nav-link">
+                <a href= "{{ route('registro_area')}}" class="nav-link">
                   <i class="fa fa-plus-circle nav-icon"></i>
                   <p>Nueva área</p>
                 </a>
@@ -296,7 +297,7 @@
             <ul class="nav nav-treeview"> 
 
               <li class="nav-item">
-                <a href={{ route('registro_tipo')}} class="nav-link">
+                <a href="{{ route('registro_tipo')}}" class="nav-link">
                   <i class="fa fa-plus nav-icon"></i>
                   <p>Nueva categoría</p>
                 </a>
@@ -322,20 +323,20 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href={{ route('registro_personal')}} class="nav-link">
+                <a href="{{ route('registro_personal')}}" class="nav-link">
                   <i class="fa fa-user-plus nav-icon"></i>
                   <p>Registar</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href= {{ route('personal_registrado')}} class="nav-link">
+                <a href="{{ route('personal_registrado')}}" class="nav-link">
                   <i class="fa fa-list-alt nav-icon"></i>
                   <p>Personal registrado</p>
                 </a>
               </li>
              
                  <li class="nav-item">
-                <a href= {{ route('alta_personal')}} class="nav-link">
+                <a href="{{ route('alta_personal')}}" class="nav-link">
                   <i class="fa fa-user nav-icon"></i>
                   <p>Alta personal</p>
                 </a>
@@ -360,13 +361,13 @@
             </a>
             <ul class="nav nav-treeview">
                <li class="nav-item">
-                <a href= {{ route('docente_activo')}} class="nav-link">
+                <a href="{{ route('docente_activo')}}" class="nav-link">
                   <i class="fa fa-check-square nav-icon"></i>
                   <p>Docentes Activos</p>
                 </a>
               </li>
                 <li class="nav-item">
-                <a href={{ route('docente_inactivo')}} class="nav-link">
+                <a href="{{ route('docente_inactivo')}}" class="nav-link">
                   <i class="fa fa-ban nav-icon"></i>
                   <p>Docentes Inactivos</p>
                 </a>
@@ -388,13 +389,13 @@
             </a>
             <ul class="nav nav-treeview">
                <li class="nav-item">
-                <a href= {{ route('encargado_activo')}} class="nav-link">
+                <a href="{{ route('encargado_activo')}}" class="nav-link">
                   <i class="fa fa-check-square nav-icon"></i>
                   <p>Encargados activos</p>
                 </a>
               </li>
                 <li class="nav-item">
-                <a href= {{ route('encargado_inactivo')}} class="nav-link">
+                <a href="{{ route('encargado_inactivo')}}" class="nav-link">
                   <i class="fa fa-ban nav-icon"></i>
                   <p>Encargados inactivos</p>
                 </a>
@@ -416,13 +417,13 @@
             </a>
             <ul class="nav nav-treeview">
  <li class="nav-item">
-                <a href={{ route('jefe_departamento')}} class="nav-link">
+                <a href="{{ route('jefe_departamento')}}" class="nav-link">
                   <i class="fa fa-university nav-icon"></i>
                   <p>Jefe de departamento</p>
                 </a>
               </li>
                <li class="nav-item">
-                <a href={{ route('jefe_lab')}} class="nav-link">
+                <a href="{{ route('jefe_lab')}}" class="nav-link">
                   <i class="fa fa-flask nav-icon"></i>
                   <p>Jefe de laboratorio</p>
                 </a>

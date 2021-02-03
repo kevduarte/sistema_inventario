@@ -31,7 +31,7 @@
 @endif
 
 <div class="container" id="font1">
-</br>
+<br>
 <form method="POST" action="{{ route('registrar_materiales') }}">
   @csrf
   <div class="form-row" align="center">
@@ -75,7 +75,7 @@
 <div class="form-row">
 
 
- <div class="form-group col-md-4">
+ <div class="form-group col-md-4" id="nombretam">
   <label for="nombre">* Nombre</label>
   <input type="text" class="form-control @error('nombre') is-invalid @enderror"  id="nombre_material" name="nombre_material" value="{{ old('nombre_material') }}" required autocomplete="nombre_material" onKeyUp="this.value = this.value.toUpperCase()">
   @error('nombre_material')
@@ -113,7 +113,7 @@
 
 <div class="form-row">
 
-  <div class="form-group col-md-4">
+  <div class="form-group col-md-4" id="marcatam">
     <label for="marca">*Marca</label>
     <input type="text" class="form-control @error('marca') is-invalid @enderror" id="marca" name="marca" value="{{ old('marca') }}" onKeyUp="this.value = this.value.toUpperCase()"  autocomplete="marca">
      @error('marca')
@@ -234,18 +234,14 @@
    <option value="">Seleccione una opción</option>
    <option value="Kilo">Kilo</option>
    <option value="Bulto">Bulto</option>
-   <option value="Gramo">Gramo</option>
-   <option value="Metro lineal">Metro lineal</option>
-   <option value="Metro cuadrado">Metro cuadrado</option>
-   <option value="Metro cúbico">Metro cúbico</option>
+  
    <option value="Pieza">Pieza</option>
    <option value="Cabeza">Cabeza</option>
    <option value="Litro">Litro</option>
    <option value="Par">Par</option>
-   <option value="Kilowatt">Kilowatt</option>
+
    <option value="Millar">Millar</option>
    <option value="Juego">Juego</option>
-   <option value="Tonelada">Tonelada</option>
    <option value="Galón">Galón</option>
    <option value="Decenas">Decenas</option>
    <option value="Cientos">Cientos</option>
@@ -354,6 +350,17 @@
    document.getElementById("tip").removeAttribute("hidden");
    document.getElementById("are").removeAttribute("hidden");
 
+
+document.getElementById("nombretam").className =
+   document.getElementById("nombretam").className.replace
+      ( /(?:^|\s)col-md-12(?!\S)/g , '' )
+
+
+document.getElementById("marcatam").className =
+   document.getElementById("marcatam").className.replace
+      ( /(?:^|\s)col-md-12(?!\S)/g , '' )
+
+
   }
 }
 
@@ -368,6 +375,8 @@ function nochecar(id){
                 document.getElementById("tot").removeAttribute("hidden");
                 document.getElementById("labels").removeAttribute("hidden");
 
+   document.getElementById("nombretam").classList.add('col-md-12');
+      document.getElementById("marcatam").classList.add('col-md-12');
 
 
 

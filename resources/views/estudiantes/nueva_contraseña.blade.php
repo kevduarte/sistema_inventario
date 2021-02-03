@@ -44,11 +44,11 @@
                                   <label for="current-password" >Contraseña Actual</label>
 
 
-                                      <input id="current-password" type="password" class="form-control" name="current-password" required>
+                                      <input id="current-password" type="password" placeholder="La contraseña actual es su n° de control" class="form-control" name="current-password" required>
 
                                       @if ($errors->has('current-password'))
                                           <span class="help-block">
-                                              <strong>{{ $errors->first('current-password') }}</strong>
+                                              <strong style="color: red;">{{ $errors->first('current-password') }}</strong>
                                           </span>
                                       @endif
 
@@ -62,7 +62,7 @@
 
                                       @if ($errors->has('new-password'))
                                           <span class="help-block">
-                                              <strong>{{ $errors->first('new-password') }}</strong>
+                                              <strong style="color: red;">{{ $errors->first('new-password') }}</strong>
                                           </span>
                                       @endif
 

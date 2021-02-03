@@ -27,6 +27,9 @@
     @if (Session::has('message'))
       <div class="alert alert-info">{{ Session::get('message') }}</div>
  @endif
+
+         <div class="table-responsive">
+
   <table class="table table-bordered table-striped" id="font2"  >
        <h2>VALE DE RESGUARDO POR EL SIGUIENTE EQUIPO </h2>
 
@@ -61,11 +64,14 @@
                                 </table>
   
                                 {{ $detallemate->links() }}
+
+                              </div>
                          </div>
 
                       <div class="container" >
 
-  
+          <div class="table-responsive">
+
   <table class="table table-bordered table-striped" id="font2"  >
        <h2>INTEGRANTES DE LA BRIGADA  {{$nombreb}}
  </h2>
@@ -93,7 +99,7 @@
                                  
                                     <tr >
                                         <td >{{$indice+1}}</td>
-                                        <td>{{ $det->nombre}} {{$det->apellido_paterno}}{{$det->apellido_materno}}</td>
+                                        <td>{{$det->apellido_paterno}} {{$det->apellido_materno}} {{ $det->nombre}}</td>
                                         <td>{{$det->num_control}}</td>
 
                                         
@@ -107,6 +113,7 @@
                                 </table>
   
                                 {{ $detalle->links() }}
+                              </div>
                          </div>
 
                          @endsection

@@ -14,8 +14,8 @@
     @endif
 
 <div class="container mt-3" id="font2" style="background-image: url('/image/topoc (1).png'); background-size: auto; background-position:all; background-repeat: repeat; background-color: transparent ;">
-</br>
-</br>
+<br>
+<br>
 @if (Session::has('mess'))
     <div class="alert alert-danger alert-block">
       <button type="button" class="close" data-dismiss="alert">×</button>
@@ -79,7 +79,7 @@
 
                          <div class="form-group col-md-4">
                             <label for="semestre" style=" font-weight: bold;" >{{ __('*Semestre') }}</label>
-                                <input id="semestre2" maxlength="12" type="text" class="form-control @error('semestre2') is-invalid @enderror" onkeypress="return numeros (event)" name="semestre2"  autocomplete="semestre2" required>
+                                <input disabled id="semestre2" maxlength="12" type="text" class="form-control @error('semestre2') is-invalid @enderror" onkeypress="return numeros (event)" name="semestre2"  autocomplete="semestre2" required>
                                 @error('semestre2')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -120,7 +120,7 @@
  <div class="form-row">
 
    <div class="form-group col-md-6">
-                            <label for="email" style=" font-weight: bold;">{{ __('Correo') }}</label>
+                            <label for="email" style=" font-weight: bold;">{{ __('*Correo') }}</label>
                                 <input id="email" type="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" name="email" autocomplete="email">
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -146,14 +146,15 @@
 </div>
 </div>
 
-
-
-</br>
-
-
-
 </form>
 
+<div class="container">
+<p style="  font-family: Arial, Helvetica, sans-serif;
+ font-weight:bold; color: #000000" >
+  <span style="color: red;"><strong>NOTA: </strong></span>
+  Una vez que termines de ingresar tus datos tu
+   <span style="color: #004BB1;"><strong>cuenta</strong> </span>será creada automáticamente, tu usuario y contraseña será tu<span style="color:#004BB1;"><strong> numero de control.</strong> </span>  </p>
+</div>
 
 
 </div>

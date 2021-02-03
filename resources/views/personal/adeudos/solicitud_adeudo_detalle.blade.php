@@ -82,6 +82,7 @@
                 </div>
                 </div>
 
+        <div class="table-responsive">
 
   <table class="table table-bordered table-striped" id="font2"  >
        <h2>Vales de reguardo</h2>
@@ -116,6 +117,8 @@
                                 </table>
   
                                 {{ $detalle->links() }}
+
+                              </div>
                          </div>
                          @endsection
 

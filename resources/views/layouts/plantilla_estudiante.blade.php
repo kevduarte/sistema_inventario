@@ -3,24 +3,34 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
   <title>Laboratorio de ingenieria civil @yield('title')</title>
-  <link rel="shortcut icon" href="{{asset('image/ito.ico')}}">
+    <link rel="shortcut icon" href="{{asset('/image/ito.ico')}}">
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="{{asset('requisitos/lte/plugins/fontawesome-free/css/all.min.css')}}">
+  <link rel="stylesheet" href="{{asset('/requisitos/lte/plugins/fontawesome-free/css/all.min.css')}}">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="{{asset('requisitos/lte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
+  <link rel="stylesheet" href="{{asset('/requisitos/lte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
   <!-- Theme style -->
-  <link rel="stylesheet" href="{{asset('requisitos/lte/dist/css/adminlte.min.css')}}">
+  <link rel="stylesheet" href="{{asset('/requisitos/lte/dist/css/adminlte.min.css')}}">
   <!-- Google Font: Source Sans Pro -->
+  
+ 
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  <link rel="stylesheet"  href="{{asset('css/estiloadmin.css')}}">
+ 
+ <link rel="stylesheet"  href="{{asset('/css/estiloadmin.css')}}">
 
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{asset('/requisitos/lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css')}}">
+  
 </head>
+
 
 <!-- fin del head del admin-->
 
@@ -42,32 +52,61 @@
 
       <ul class="navbar-nav ml-auto">
 
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Cuenta</a>
-      </li>
 
-      <li class="nav-item">
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">
 
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="mr-2 d-none d-lg-inline text-gray-600 small"></span>
-
-
-          <img class="img-profile rounded-circle"  src="" >
-
+          
+        </span>
         </a>
-        <!-- Dropdown - User Information -->
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href= >
-            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
-            Configuración de cuenta
-          </a>
+
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">mensajes</span>
           <div class="dropdown-divider"></div>
-         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
-            Cerrar Sesión
+          <a href="{{ route('solicitudes_area')}}" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i>
+
+            
+            
           </a>
+
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i> 8 friend requests
+            <span class="float-right text-muted text-sm">12 hours</span>
+          </a>
+
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> 3 new reports
+            <span class="float-right text-muted text-sm">2 days</span>
+          </a>
+
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">laboratorio</a>
         </div>
       </li>
+
+
+
+              <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Cuenta </span></a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{{ route('cuenta_admin')}}" >
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-black-400"></i>
+                    Configuración de cuenta
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-black-400"></i>
+                    Cerrar Sesión
+                  </a>
+                </div>
+              </li>
 
     </ul>
 
@@ -96,7 +135,7 @@
           <img src="{{asset('image/topo.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="{{route ('estudiante')}}" class="d-block"><span><?php $usuario_actual=Auth::user()->id_user;
+          <a href="{{route ('estudiante')}}" class="d-block" id="didacinfo"><span><?php $usuario_actual=Auth::user()->id_user;
                   $id=$usuario_actual;
                   $users = DB::table('personas')
                   ->select('personas.nombre','personas.apellido_paterno')
@@ -148,15 +187,21 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href= {{ route('grupos_disponibles')}} class="nav-link">
+                <a href="{{ route('grupos_disponibles')}}" class="nav-link">
                   <i class="fa fa-bookmark nav-icon"></i>
                   <p>Grupos disponibles</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href={{ route('mis_cursos')}} class="nav-link">
+                <a href="{{ route('mis_cursos')}}" class="nav-link">
                   <i class="fa fa-bars nav-icon"></i>
                   <p>Mis grupos</p>
+                </a>
+              </li>
+               <li class="nav-item">
+                <a href="{{ route('mis_brigadas')}}" class="nav-link">
+                  <i class="fa fa-users nav-icon"></i>
+                  <p>Brigadas</p>
                 </a>
               </li>
               
@@ -168,6 +213,48 @@
 
           </li>
           <!-- Gestión de prestamos -->
+
+
+
+
+        <li class="nav-item has-treeview">
+
+            <a href="#" class="nav-link">
+              <i class="fa fa-suitcase"></i>
+              <p style="font-family: 'Arial, Helvetica, sans-serif';">
+                Prácticas
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href= "{{route ('practicas_estudiante')}}" class="nav-link">
+                  <i class="fa fa-clock nav-icon"></i>
+                  <p>Pendientes</p>
+                </a>
+              </li>
+               <li class="nav-item">
+                <a href= "{{route ('practicas_estudiante_curso')}}" class="nav-link">
+                  <i class="fa fa-clock nav-icon"></i>
+                  <p>EN curso</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-hourglass-end nav-icon"></i>
+                  <p>Finalizaddffas</p>
+                </a>
+              </li>
+              
+           
+             
+
+            </ul>
+
+
+          </li>
+          <!-- Gestión de prestamos -->
+
 
 
           
@@ -246,31 +333,24 @@
 
 </div>
 <!-- ./wrapper -->
-
 <!-- jQuery -->
-<script src="{{asset('requisitos/lte/plugins/jquery/jquery.min.js')}}"></script>
+<script src="{{asset('/requisitos/lte/plugins/jquery/jquery.min.js')}}"></script>
+<script src="{{asset('/js/app.js')}}"></script>
+
 <!-- Bootstrap 4 -->
-<script src="{{asset('requisitos/lte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<script src="{{asset('/requisitos/lte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <!-- overlayScrollbars -->
-<script src="{{asset('requisitos/lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
+<script src="{{asset('/requisitos/lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 <!-- AdminLTE App -->
-<script src="{{asset('requisitos/lte/dist/js/adminlte.min.js')}}"></script>
+<script src="{{asset('/requisitos/lte/dist/js/adminlte.min.js')}}"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="{{asset('requisitos/lte/dist/js/demo.js')}}"></script>
-
-<!--TABLA BUSCAR-->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<script src="{{asset('/requisitos/lte/dist/js/demo.js')}}"></script>
 
 
 
-  <script src="{{asset('requisitos/jquery/jquery.min.js')}}"></script>
-  <script src="{{asset('requisitos/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-
-  <!-- Core plugin JavaScript-->
-  <script src="{{asset('requisitos/jquery-easing/jquery.easing.min.js')}}"></script>
-
-  <!-- Custom scripts for all pages-->
-  <script src="{{asset('js/sb-admin-2.min.js')}}"></script>
+<!-- DataTables -->
+<script src="{{asset('/requisitos/lte/plugins/datatables/jquery.dataTables.js')}}"></script>
+<script src="{{asset('/requisitos/lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js')}}"></script>
 
 
 
